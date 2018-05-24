@@ -1,0 +1,13 @@
+Package: biogeonet
+Type: Package
+Title: Biogeographical Network Manipulation And Analysis
+Version: 0.1.0
+Author: Boris Leroy
+Maintainer: Boris Leroy <boris.leroy@gmail.com>
+Description: Several functions designed to write, read and analyse 
+    biogeographical networks with R. Primarily designed to work with the Map
+    Equation (infomap).
+License: GPL (>= 2.0)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
