@@ -25,15 +25,15 @@
 clustersBelowLimit <- function(df, column, limit, remove.clusters = FALSE)
 {
   if(length(which(sapply(levels(df[, column]),
-                         FUN = function(x, y) length(y[y == x]),
+                         FUN = function(x, y) length(na.omit(y[y == x])),
                          y = df[, column]) < limit)))
   {
 
     a <- droplevels(df[which(df[, column] %in%
                                names(sapply(levels(df[, column]),
-                                            FUN = function(x, y) length(y[y == x]),
+                                            FUN = function(x, y) length(na.omit(y[y == x])),
                                             y = df[, column]))[which(sapply(levels(df[, column]),
-                                                                            FUN = function(x, y) length(y[y == x]),
+                                                                            FUN = function(x, y) length(na.omit(y[y == x])),
                                                                             y = df[, column]) < limit)]), ])
     message(paste(length(levels(a[, column])), " clusters are below the limit, corresponding to ",
             nrow(a), " nodes.\n",
@@ -41,9 +41,9 @@ clustersBelowLimit <- function(df, column, limit, remove.clusters = FALSE)
             "\n  - Nodes within these clusters: \n ", paste(levels(a$Name), collapse = ", "), "\n", sep =""))
     df <- df[-which(df[, column] %in%
                       names(sapply(levels(df[, column]),
-                                   FUN = function(x, y) length(y[y == x]),
+                                   FUN = function(x, y) length(na.omit(y[y == x])),
                                    y = df[, column]))[which(sapply(levels(df[, column]),
-                                                                   FUN = function(x, y) length(y[y == x]),
+                                                                   FUN = function(x, y) length(na.omit(y[y == x])),
                                                                    y = df[, column]) < limit)]), ]
     df <- droplevels(df)
     if(remove.clusters)
