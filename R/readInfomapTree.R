@@ -78,7 +78,12 @@ readInfomapTree <- function(file, network.summary = TRUE,
       }
     }
   }
-
+  
+  tree.infomap[, grep("lvl", colnames(tree.infomap))] <-  
+    lapply(tree.infomap[, grep("lvl", colnames(tree.infomap))], 
+           function(x) factor(x, levels = 
+                                levels(x)[order(table(x), decreasing = TRUE)]))
+  
   return(tree.infomap)
 }
 

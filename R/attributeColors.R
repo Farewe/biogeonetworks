@@ -35,7 +35,7 @@ attributeColors <- function(network, nb.max.colors = 12, palette = "Paired",
                             sh.grey = FALSE, other.color = grey(.5))
 {
   require(RColorBrewer)
-  if(max(as.numeric(network[, lvl])) == 2 | nb.max.colors == 2)
+  if(length(levels(network[, lvl])) == 2 | nb.max.colors == 2)
   {
     network[, colname] <-  c(RColorBrewer::brewer.pal(3, palette)[c(1, 3)],
                              rep(grey(.5),
@@ -46,7 +46,7 @@ attributeColors <- function(network, nb.max.colors = 12, palette = "Paired",
                                             as.numeric(network[, lvl])]
   } else
   {
-    if(max(as.numeric(network[, lvl])) > nb.max.colors)
+    if(length(levels(network[, lvl])) > nb.max.colors)
     {
       if(sh.grey)
       {
