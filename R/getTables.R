@@ -8,6 +8,8 @@
 #' \code{db}
 #' @param network the network data.frame, usually read from
 #' \code{\link{readInfomapTree}}
+#' @param drop.levels if \code{TRUE}, then unused levels will be pruned
+#' from the resulting table
 #' @export
 #' @return A subset of \code{network} containing only sites
 #' @author
@@ -17,10 +19,14 @@
 #'
 #'
 #' @export
-getSiteTable <- function(db, site.field = 1, network)
+getSiteTable <- function(db, site.field = 1, network, drop.levels = TRUE)
 {
   sites <- as.character(network$Name[which(network$Name %in% db[, site.field])])
   sites <- network[which(network$Name %in% sites), ]
+  if(drop.levels)
+  {
+    sites <- droplevels(sites)
+  }
   return(sites)
 }
 
@@ -34,6 +40,8 @@ getSiteTable <- function(db, site.field = 1, network)
 #' \code{db}
 #' @param network the network data.frame, usually read from
 #' \code{\link{readInfomapTree}}
+#' @param drop.levels if \code{TRUE}, then unused levels will be pruned
+#' from the resulting table
 #' @export
 #' @author
 #' Boris Leroy \email{leroy.boris@@gmail.com}
@@ -43,10 +51,14 @@ getSiteTable <- function(db, site.field = 1, network)
 #'
 #'
 #' @export
-getSpeciesTable <- function(db, species.field = 2, network)
+getSpeciesTable <- function(db, species.field = 2, network, drop.levels = TRUE)
 {
   species <- as.character(network$Name[which(network$Name %in% db[, species.field])])
   species <- network[which(network$Name %in% species), ]
+  if(drop.levels)
+  {
+    sites <- droplevels(sites)
+  }
   return(species)
 }
 
