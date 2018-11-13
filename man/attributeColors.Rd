@@ -6,7 +6,8 @@
 \usage{
 attributeColors(network, nb.max.colors = 12, palette = "Paired",
   lvl = "lvl1", colname = "color", sh.grey = FALSE,
-  other.color = grey(0.5))
+  other.color = grey(0.5), cluster.order = "sites", db,
+  site.field = 1, species.field = 2)
 }
 \arguments{
 \item{network}{the network data.frame, usually issued from
@@ -16,7 +17,7 @@ attributeColors(network, nb.max.colors = 12, palette = "Paired",
 clusters to be colored.}
 
 \item{palette}{a character string specifying the palette to use. See
-\code{\link[RColorBrewer]{brewer.pal}}}
+\code{\link[RColorBrewer]{RColorBrewer}}}
 
 \item{lvl}{a character string specifying the level to which you want to
 attribute colors}
@@ -29,6 +30,18 @@ beyond \code{nb.max.colors} will be attributed distinct shades of grey. If
 
 \item{other.color}{a character string or function specifying the color to
 attribute to clusters beyond \code{nb.max.colors}}
+
+\item{cluster.order}{"undefined", "sites", "species", "sites+species".
+This parameter defines in what order colors are attributed to clusters:
+default order ("undefined"), or according to number of sites per cluster
+ ("sites"), number of species per cluster ("species") or the total number
+ of sites and species per cluster ("sites+species")}
+
+\item{db}{a data.frame with at least two columns, site and species}
+
+\item{site.field}{name or number of site column}
+
+\item{species.field}{name or number of species column}
 }
 \value{
 The same data.frame as \code{network} with an additional color

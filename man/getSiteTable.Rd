@@ -4,7 +4,7 @@
 \alias{getSiteTable}
 \title{Get the data.frame of sites from a bipartite data.frame}
 \usage{
-getSiteTable(db, site.field = 1, network)
+getSiteTable(db, site.field = 1, network, drop.levels = TRUE)
 }
 \arguments{
 \item{db}{the database that was used to construct the network.}
@@ -14,6 +14,9 @@ getSiteTable(db, site.field = 1, network)
 
 \item{network}{the network data.frame, usually read from
 \code{\link{readInfomapTree}}}
+
+\item{drop.levels}{if \code{TRUE}, then unused levels will be pruned
+from the resulting table}
 }
 \value{
 A subset of \code{network} containing only sites

@@ -4,7 +4,7 @@
 \alias{getSpeciesTable}
 \title{Get the data.frame of species from a bipartite data.frame}
 \usage{
-getSpeciesTable(db, species.field = 2, network)
+getSpeciesTable(db, species.field = 2, network, drop.levels = TRUE)
 }
 \arguments{
 \item{db}{the database that was used to construct the network.}
@@ -14,6 +14,9 @@ getSpeciesTable(db, species.field = 2, network)
 
 \item{network}{the network data.frame, usually read from
 \code{\link{readInfomapTree}}}
+
+\item{drop.levels}{if \code{TRUE}, then unused levels will be pruned
+from the resulting table}
 }
 \value{
 A subset of \code{network} containing only species

@@ -57,7 +57,7 @@ getSpeciesTable <- function(db, species.field = 2, network, drop.levels = TRUE)
   species <- network[which(network$Name %in% species), ]
   if(drop.levels)
   {
-    sites <- droplevels(sites)
+    species <- droplevels(species)
   }
   return(species)
 }
