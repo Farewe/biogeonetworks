@@ -64,7 +64,8 @@ attributeColors <- function(network,
     error("cluster.order must be one of 'undefined', 'sites', 'species' or 'sites+species'")
   }
   freqs.per.cluster <- plyr::count(nets[, lvl])
-  freqs.per.cluster$cluster.order <- rank(-freqs.per.cluster$freq)
+  freqs.per.cluster$cluster.order <- rank(-freqs.per.cluster$freq,
+                                          ties.method = "first")
   if(cluster.order != "undefined")
   {
     if(cluster.order == "sites" | cluster.order == "species")
@@ -86,6 +87,7 @@ attributeColors <- function(network,
   {
     nets$cluster.order <- as.numeric(network[, lvl])
   }
+
 
   if(length(levels(network[, lvl])) == 2 | nb.max.colors == 2)
   {
