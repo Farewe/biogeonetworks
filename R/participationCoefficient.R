@@ -36,13 +36,13 @@ participationCoefficient <- function(network, db, site.field, species.field,
   for (site in sites)
   {
     subdb <- db[which(db[, site.field] %in% site), ]
-    tmp <- ddply(subdb, "species.cluster", summarise, nlinks = length(species.cluster))
+    tmp <- plyr::ddply(subdb, "species.cluster", summarise, nlinks = length(species.cluster))
     network$participation.coef[network$Name == site] <- 1 - sum((tmp$nlinks / sum(tmp$nlinks))^2)
   }
   for (sp in species)
   {
     subdb <- db[which(db[, species.field] %in% sp), ]
-    tmp <- ddply(subdb, "site.cluster", summarise, nlinks = length(site.cluster))
+    tmp <- plyr::ddply(subdb, "site.cluster", summarise, nlinks = length(site.cluster))
     network$participation.coef[network$Name == sp] <- 1 - sum((tmp$nlinks / sum(tmp$nlinks))^2)
   }
   return(network)
