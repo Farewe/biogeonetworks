@@ -40,9 +40,9 @@ our networks are handled in a `data.frame` format in R, and exported to other
 software in specific network formats such as Pajek or GDF formats. However, 
 conversion from and to `igraph` objects are possible.*
 
-# 1. Requirements 
+# Requirements 
 
-## 1.1. The biogeonetworks package 
+## The biogeonetworks package 
 
 Install the most recent version from GitHub:
 ``` {r install, eval = FALSE}
@@ -56,7 +56,7 @@ Install the following packages (required to run the examples)
 install.packages(c("rgdal", "plyr", "RColorBrewer", "sp", "tmap"))
 ```
 
-## 1.2. Example database
+## Example database
 
 Our example dataset will be the global database of freshwater fish species
 occurrences as we used it in the paper on [global biogeographical regions of 
@@ -83,7 +83,7 @@ basins <- readRDS("basinshapefile.RDS")
 plot(basins)
 ```
 
-## 1.3. Map Equation software
+## Map Equation software
 
 In order to run Map Equation, you need to download the source code from the
 [Map Equation website and compile the file](https://www.mapequation.org/code.html).
@@ -103,7 +103,7 @@ Put the Map Equation software in a directory where you know the full path; for
 me it is at the root of my R folder.
 
 
-## 1.4 The Gephi network visualisation software
+## The Gephi network visualisation software
 
 To explore the network, the easiest method is to install the open-source
 [Gephi network visualisation software](gephi.org). There are [multiple tutorials
@@ -111,7 +111,7 @@ to learn it if you have never used this software before](https://gephi.org/users
 the same time hard to master! Take the time to experiment with your graphs,
 you will be well rewarded in the end.
 
-# 2. Biogeographical network analysis: 
+# Biogeographical network analysis: a detailed tutorial
 
 ## Overview of the procedure
 
@@ -140,13 +140,13 @@ species abundances ([see an example here](https://www.nature.com/articles/ismej2
 Now, because our example network is already in the correct format, we will skip
 to Step 2.
 
-## Step 1. Prepare the bipartite `data.frame`
+## Step 1 Prepare the bipartite `data.frame`
 
 Our example is already in this format. 
 
 **Important**: make sure that both your species and site columns are `factors`.
 
-## Step 2. Write the network in Pajek format
+## Step 2 Write the network in Pajek format
 
 The Pajek format is a network file format that can be read by the Map Equation
 algorithm. We use the function `writePajek` to do that.
@@ -167,7 +167,7 @@ your network.
 **If you have any errors at this stage please verify the spelling of your columns, 
 and that they are in `factor` format.**
 
-## Step 3. Run the Map Equation algorithm
+## Step 3 Run the Map Equation algorithm
 
 We will now run the Map Equation algorithm, which is an executable file outside
 R. To do that, we use the `system()` function which allows to run software in
@@ -229,7 +229,7 @@ written by Map Equation, called "fish.tree" and "fish.map".
 **If you have any errors at this step, please verify carefully your `system()` 
 command, and check that you did not make any mistake in your file / path names.**
 
-## Step 4. Read Map Equation results in R
+## Step 4 Read Map Equation results in R
 
 We read the "fish.tree" file in R with the function `readInfomapTree()`.
 
@@ -279,7 +279,7 @@ analysing our results - we are mostly interested in what's in columns `lvl1`
 to `lvl6`.
 
 
-## Step 5. Analysing biogeographical network & clustering results in R
+## Step 5 Analysing biogeographical network & clustering results in R
 
 Foremost, we are looking for several information to grasp our clustering results:
 How many clusters there are? Are they all significant - i.e. how many species 
@@ -426,7 +426,7 @@ head(fish.clusters)
 ```
 
 
-## Step 6. Make maps
+## Step 6 Make maps
 
 The simplest way to map our clusters with vector data is to add the colour 
 columns the dataframe of our polygon data. Whether you work with package `sp` or
@@ -489,7 +489,7 @@ legend("bottomleft",
 ```
 
 
-## Step 7. Write the network for visualisation in Gephi
+## Step 7 Write the network for visualisation in Gephi
 
 If you want to explore the structure of your network in [Gephi](gephi.org), you 
 can write the network on the hard drive with the function `writeGDF`. The major
@@ -525,7 +525,7 @@ I highly recommend you to learn to explore networks as they are very useful to
 understand patterns or discover errors in your datasets (e.g., strange links
 between regions may indicate records of introduced species!).
 
-# 3. Calculation of the Participation Coefficient
+## Calculation of the Participation Coefficient
 
 The Participation Coefficient, introduced by [Bloomfield et al. 2018](https://onlinelibrary.wiley.com/doi/full/10.1111/ecog.02596),
 provides an indication of the degree to which a node is sharing links with nodes
@@ -574,7 +574,7 @@ between the results here and those in our paper correspond to the *post-hoc*
 changes we made to the minor clusters (see Appendix S5).
 
 
-# 4. Biogeographical networks, a second example with raster maps
+# Biogeographical networks, a second example with raster maps
 
 For this example I will be using occurrence data which I will transform into 
 raster data - I suspect this is the most common type of data that people are 
@@ -684,7 +684,7 @@ bipartite.salticidae <- bipartite.salticidae[-which(is.na(bipartite.salticidae$O
 
 ```
 
-### Step 2. Write the network in Pajek format
+### Step 2 Write the network in Pajek format
 ```{r raster2, cache=TRUE}
 writePajek(bipartite.salticidae, 
            site.field = "Cell", # Name of your site column
@@ -693,12 +693,12 @@ writePajek(bipartite.salticidae,
            abundance.field = NULL)
 ```
 
-### Step 3. Run the Map Equation algorithm
+### Step 3 Run the Map Equation algorithm
 ```{r raster3, cache=TRUE}
 system("infomap --undirected --tree --map -N 100 salticidae.net ./")
 ```
 
-### Step 4. Read Map Equation clusters in R
+### Step 4 Read Map Equation clusters in R
 ```{r raster4, cache=TRUE}
 salticidae.clusters <- readInfomapTree("salticidae.tree",
                                       network.summary = TRUE, # Prints a summary of the clustering results

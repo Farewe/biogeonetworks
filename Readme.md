@@ -1,43 +1,43 @@
 Biogeographical networks in R
 ================
 
-  - [1. Requirements](#requirements)
-      - [1.1. The biogeonetworks package](#the-biogeonetworks-package)
-      - [1.2. Example database](#example-database)
-      - [1.3. Map Equation software](#map-equation-software)
-      - [1.4 The Gephi network visualisation
+  - [Requirements](#requirements)
+      - [The biogeonetworks package](#the-biogeonetworks-package)
+      - [Example database](#example-database)
+      - [Map Equation software](#map-equation-software)
+      - [The Gephi network visualisation
         software](#the-gephi-network-visualisation-software)
-  - [2. Biogeographical network
-    analysis:](#biogeographical-network-analysis)
+  - [Biogeographical network analysis: a detailed
+    tutorial](#biogeographical-network-analysis-a-detailed-tutorial)
       - [Overview of the procedure](#overview-of-the-procedure)
-      - [Step 1. Prepare the bipartite
-        `data.frame`](#step-1.-prepare-the-bipartite-data.frame)
-      - [Step 2. Write the network in Pajek
-        format](#step-2.-write-the-network-in-pajek-format)
-      - [Step 3. Run the Map Equation
-        algorithm](#step-3.-run-the-map-equation-algorithm)
-      - [Step 4. Read Map Equation results in
-        R](#step-4.-read-map-equation-results-in-r)
-      - [Step 5. Analysing biogeographical network & clustering results
+      - [Step 1 Prepare the bipartite
+        `data.frame`](#step-1-prepare-the-bipartite-data.frame)
+      - [Step 2 Write the network in Pajek
+        format](#step-2-write-the-network-in-pajek-format)
+      - [Step 3 Run the Map Equation
+        algorithm](#step-3-run-the-map-equation-algorithm)
+      - [Step 4 Read Map Equation results in
+        R](#step-4-read-map-equation-results-in-r)
+      - [Step 5 Analysing biogeographical network & clustering results
         in
-        R](#step-5.-analysing-biogeographical-network-clustering-results-in-r)
-      - [Step 6. Make maps](#step-6.-make-maps)
-      - [Step 7. Write the network for visualisation in
-        Gephi](#step-7.-write-the-network-for-visualisation-in-gephi)
-  - [3. Calculation of the Participation
-    Coefficient](#calculation-of-the-participation-coefficient)
-  - [4. Biogeographical networks, a second example with raster
+        R](#step-5-analysing-biogeographical-network-clustering-results-in-r)
+      - [Step 6 Make maps](#step-6-make-maps)
+      - [Step 7 Write the network for visualisation in
+        Gephi](#step-7-write-the-network-for-visualisation-in-gephi)
+      - [Calculation of the Participation
+        Coefficient](#calculation-of-the-participation-coefficient)
+  - [Biogeographical networks, a second example with raster
     maps](#biogeographical-networks-a-second-example-with-raster-maps)
       - [Get occurrence data points and transform them into
         rasters](#get-occurrence-data-points-and-transform-them-into-rasters)
       - [Step 1 Prepare the bipartite
-        `data.frame`](#step-1-prepare-the-bipartite-data.frame)
-      - [Step 2. Write the network in Pajek
-        format](#step-2.-write-the-network-in-pajek-format-1)
-      - [Step 3. Run the Map Equation
-        algorithm](#step-3.-run-the-map-equation-algorithm-1)
-      - [Step 4. Read Map Equation clusters in
-        R](#step-4.-read-map-equation-clusters-in-r)
+        `data.frame`](#step-1-prepare-the-bipartite-data.frame-1)
+      - [Step 2 Write the network in Pajek
+        format](#step-2-write-the-network-in-pajek-format-1)
+      - [Step 3 Run the Map Equation
+        algorithm](#step-3-run-the-map-equation-algorithm-1)
+      - [Step 4 Read Map Equation clusters in
+        R](#step-4-read-map-equation-clusters-in-r)
       - [Step 5 Analysing the results in
         R](#step-5-analysing-the-results-in-r)
       - [Step 6 Make raster maps\!](#step-6-make-raster-maps)
@@ -73,9 +73,9 @@ R, and exported to other software in specific network formats such as
 Pajek or GDF formats. However, conversion from and to `igraph` objects
 are possible.*
 
-# 1\. Requirements
+# Requirements
 
-## 1.1. The biogeonetworks package
+## The biogeonetworks package
 
 Install the most recent version from GitHub:
 
@@ -90,7 +90,7 @@ Install the following packages (required to run the examples)
 install.packages(c("rgdal", "plyr", "RColorBrewer", "sp", "tmap"))
 ```
 
-## 1.2. Example database
+## Example database
 
 Our example dataset will be the global database of freshwater fish
 species occurrences as we used it in the paper on [global
@@ -144,7 +144,7 @@ plot(basins)
 
 ![](Readme_files/figure-gfm/dlfile2-1.png)<!-- -->
 
-## 1.3. Map Equation software
+## Map Equation software
 
 In order to run Map Equation, you need to download the source code from
 the [Map Equation website and compile the
@@ -165,7 +165,7 @@ macs\!
 Put the Map Equation software in a directory where you know the full
 path; for me it is at the root of my R folder.
 
-## 1.4 The Gephi network visualisation software
+## The Gephi network visualisation software
 
 To explore the network, the easiest method is to install the open-source
 [Gephi network visualisation software](gephi.org). There are [multiple
@@ -174,7 +174,7 @@ before](https://gephi.org/users/). This is relatively easy to learn,
 while at the same time hard to master\! Take the time to experiment with
 your graphs, you will be well rewarded in the end.
 
-# 2\. Biogeographical network analysis:
+# Biogeographical network analysis: a detailed tutorial
 
 ## Overview of the procedure
 
@@ -205,14 +205,14 @@ your graphs, you will be well rewarded in the end.
 Now, because our example network is already in the correct format, we
 will skip to Step 2.
 
-## Step 1. Prepare the bipartite `data.frame`
+## Step 1 Prepare the bipartite `data.frame`
 
 Our example is already in this format.
 
 **Important**: make sure that both your species and site columns are
 `factors`.
 
-## Step 2. Write the network in Pajek format
+## Step 2 Write the network in Pajek format
 
 The Pajek format is a network file format that can be read by the Map
 Equation algorithm. We use the function `writePajek` to do that.
@@ -233,7 +233,7 @@ exploring your network.
 **If you have any errors at this stage please verify the spelling of
 your columns, and that they are in `factor` format.**
 
-## Step 3. Run the Map Equation algorithm
+## Step 3 Run the Map Equation algorithm
 
 We will now run the Map Equation algorithm, which is an executable file
 outside R. To do that, we use the `system()` function which allows to
@@ -298,7 +298,7 @@ have been written by Map Equation, called “fish.tree” and “fish.map”.
 `system()` command, and check that you did not make any mistake in your
 file / path names.**
 
-## Step 4. Read Map Equation results in R
+## Step 4 Read Map Equation results in R
 
 We read the “fish.tree” file in R with the function `readInfomapTree()`.
 
@@ -372,7 +372,7 @@ Once you are familiarised with how clusters are coded, we can proceed
 and start analysing our results - we are mostly interested in what’s in
 columns `lvl1` to `lvl6`.
 
-## Step 5. Analysing biogeographical network & clustering results in R
+## Step 5 Analysing biogeographical network & clustering results in R
 
 Foremost, we are looking for several information to grasp our clustering
 results: How many clusters there are? Are they all significant -
@@ -718,7 +718,7 @@ head(fish.clusters)
     ## 5 1.1.1.1             Zacco platypus <NA>     #A6CEE3     #A6CEE3
     ## 6 1.1.1.1        Pseudorasbora parva <NA>     #A6CEE3     #A6CEE3
 
-## Step 6. Make maps
+## Step 6 Make maps
 
 The simplest way to map our clusters with vector data is to add the
 colour columns the dataframe of our polygon data. Whether you work with
@@ -803,7 +803,7 @@ legend("bottomleft",
 
 ![](Readme_files/figure-gfm/polygons4-1.png)<!-- -->
 
-## Step 7. Write the network for visualisation in Gephi
+## Step 7 Write the network for visualisation in Gephi
 
 If you want to explore the structure of your network in
 [Gephi](gephi.org), you can write the network on the hard drive with the
@@ -838,7 +838,7 @@ useful to understand patterns or discover errors in your datasets (e.g.,
 strange links between regions may indicate records of introduced
 species\!).
 
-# 3\. Calculation of the Participation Coefficient
+## Calculation of the Participation Coefficient
 
 The Participation Coefficient, introduced by [Bloomfield et
 al. 2018](https://onlinelibrary.wiley.com/doi/full/10.1111/ecog.02596),
@@ -912,7 +912,7 @@ differences between the results here and those in our paper correspond
 to the *post-hoc* changes we made to the minor clusters (see Appendix
 S5).
 
-# 4\. Biogeographical networks, a second example with raster maps
+# Biogeographical networks, a second example with raster maps
 
 For this example I will be using occurrence data which I will transform
 into raster data - I suspect this is the most common type of data that
@@ -1035,7 +1035,7 @@ colnames(bipartite.salticidae) <- c("Cell", "Species", "Occurrence")
 bipartite.salticidae <- bipartite.salticidae[-which(is.na(bipartite.salticidae$Occurrence)), ]
 ```
 
-### Step 2. Write the network in Pajek format
+### Step 2 Write the network in Pajek format
 
 ``` r
 writePajek(bipartite.salticidae, 
@@ -1045,13 +1045,13 @@ writePajek(bipartite.salticidae,
            abundance.field = NULL)
 ```
 
-### Step 3. Run the Map Equation algorithm
+### Step 3 Run the Map Equation algorithm
 
 ``` r
 system("infomap --undirected --tree --map -N 100 salticidae.net ./")
 ```
 
-### Step 4. Read Map Equation clusters in R
+### Step 4 Read Map Equation clusters in R
 
 ``` r
 salticidae.clusters <- readInfomapTree("salticidae.tree",
