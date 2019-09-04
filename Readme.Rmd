@@ -140,7 +140,7 @@ species abundances ([see an example here](https://www.nature.com/articles/ismej2
 Now, because our example network is already in the correct format, we will skip
 to Step 2.
 
-## Step 1 Prepare the bipartite `data.frame`
+## Step 1 Prepare the bipartite dataframe
 
 Our example is already in this format. 
 
@@ -660,7 +660,7 @@ plot(france, add = TRUE)
 Now that we have all our species in the format of a presence raster, we will
 prepare the bipartite `data.frame` necessary for the network analysis.
 
-### Step 1 Prepare the bipartite `data.frame`
+### Step 1 Prepare the bipartite dataframe
 
 First we will transform the raster stack in a cell * species matrix, then 
 convert it into the bipartite `data.frame.`
@@ -669,6 +669,10 @@ convert it into the bipartite `data.frame.`
 ```{r raster1, cache=TRUE}
 # Transform the species stack into a matrix
 salticidae.matrix <- rasterToPoints(sp.stack)
+# Get cell numbers
+rownames(salticidae.matrix) <- cellFromXY(sp.stack,
+                                          salticidae.matrix[, c(1, 2)])
+
 # Remove the x & y columns
 salticidae.matrix <- salticidae.matrix[, -c(1, 2)]
 

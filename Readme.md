@@ -11,7 +11,7 @@ Biogeographical networks in R
     tutorial](#biogeographical-network-analysis-a-detailed-tutorial)
       - [Overview of the procedure](#overview-of-the-procedure)
       - [Step 1 Prepare the bipartite
-        `data.frame`](#step-1-prepare-the-bipartite-data.frame)
+        dataframe](#step-1-prepare-the-bipartite-dataframe)
       - [Step 2 Write the network in Pajek
         format](#step-2-write-the-network-in-pajek-format)
       - [Step 3 Run the Map Equation
@@ -31,7 +31,7 @@ Biogeographical networks in R
       - [Get occurrence data points and transform them into
         rasters](#get-occurrence-data-points-and-transform-them-into-rasters)
       - [Step 1 Prepare the bipartite
-        `data.frame`](#step-1-prepare-the-bipartite-data.frame-1)
+        dataframe](#step-1-prepare-the-bipartite-dataframe-1)
       - [Step 2 Write the network in Pajek
         format](#step-2-write-the-network-in-pajek-format-1)
       - [Step 3 Run the Map Equation
@@ -205,7 +205,7 @@ your graphs, you will be well rewarded in the end.
 Now, because our example network is already in the correct format, we
 will skip to Step 2.
 
-## Step 1 Prepare the bipartite `data.frame`
+## Step 1 Prepare the bipartite dataframe
 
 Our example is already in this format.
 
@@ -1010,7 +1010,7 @@ Now that we have all our species in the format of a presence raster, we
 will prepare the bipartite `data.frame` necessary for the network
 analysis.
 
-### Step 1 Prepare the bipartite `data.frame`
+### Step 1 Prepare the bipartite dataframe
 
 First we will transform the raster stack in a cell \* species matrix,
 then convert it into the bipartite `data.frame.`
@@ -1018,6 +1018,10 @@ then convert it into the bipartite `data.frame.`
 ``` r
 # Transform the species stack into a matrix
 salticidae.matrix <- rasterToPoints(sp.stack)
+# Get cell numbers
+rownames(salticidae.matrix) <- cellFromXY(sp.stack,
+                                          salticidae.matrix[, c(1, 2)])
+
 # Remove the x & y columns
 salticidae.matrix <- salticidae.matrix[, -c(1, 2)]
 
