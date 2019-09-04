@@ -662,14 +662,15 @@ prepare the bipartite `data.frame` necessary for the network analysis.
 
 ### Step 1 Prepare the bipartite `data.frame`
 
-First we will transform the raster stack in a cell * species matrix. 
-
-*Note that how I do it here is not a memory safe way and if you have a very fine resolution raster with many species, it may cause issues with your R session. If you really struggle here you may write me a mail to a find a better solution.* 
+First we will transform the raster stack in a cell * species matrix, then 
+convert it into the bipartite `data.frame.`
 
 
 ```{r raster1, cache=TRUE}
 # Transform the species stack into a matrix
-salticidae.matrix <- getValues(sp.stack)
+salticidae.matrix <- rasterToPoints(sp.stack)
+# Remove the x & y columns
+salticidae.matrix <- salticidae.matrix[, -c(1, 2)]
 
 # Add cell numbers as row names
 rownames(salticidae.matrix) <- 1:nrow(salticidae.matrix)
