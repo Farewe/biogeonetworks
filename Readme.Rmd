@@ -676,9 +676,6 @@ rownames(salticidae.matrix) <- cellFromXY(sp.stack,
 # Remove the x & y columns
 salticidae.matrix <- salticidae.matrix[, -c(1, 2)]
 
-# Add cell numbers as row names
-rownames(salticidae.matrix) <- 1:nrow(salticidae.matrix)
-
 # Transform the matrix into a bipartite data.frame
 bipartite.salticidae <- reshape2::melt(salticidae.matrix)
 # Change column names
