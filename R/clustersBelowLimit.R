@@ -24,16 +24,16 @@
 #'
 #'
 #' @export
-clustersBelowLimit <- function(df, column, limit, rename = FALSE, remove.clusters = FALSE)
+clustersBelowLimit <- function(df, column, limit, rename = FALSE, new.col.name = paste0("renamed.", column), remove.clusters = FALSE)
 {
   clustersbelowlimit <- which(sapply(levels(df[, column]),
                                      FUN = function(x, y) length(na.omit(y[y == x])),
-                                     y = df[, column]) < limit)
+                                     y = df[, column]) <= limit)
   
   if(length(clustersbelowlimit))
   {
 
-    a <- droplevels(df[which(df[, column] %in% clustersbelowlimit), ])
+    a <- droplevels(df[which(df[, column] %in% names(clustersbelowlimit)), ])
     message(paste(length(levels(a[, column])), " clusters are below the limit, corresponding to ",
             nrow(a), " nodes.\n",
             "  - Clusters below the limit: \n", paste(levels(a[, column]), collapse = ", "),
@@ -41,10 +41,11 @@ clustersBelowLimit <- function(df, column, limit, rename = FALSE, remove.cluster
     
     if(rename)
     {
-      levels(df[, column])[which(levels(df[, column]) %in% clustersbelowlimit)] <- "small.clusters"
+      df[, new.col.name] <- df[, column]
+      levels(df[, new.col.name])[which(levels(df[, new.col.name]) %in% names(clustersbelowlimit))] <- "small.clusters"
     } else if(remove.clusters)
     {
-      df <- droplevels(df[-which(df[, column] %in% clustersbelowlimit), ])
+      df <- droplevels(df[-which(df[, column] %in% names(clustersbelowlimit)), ])
     }
 
     return(df)
