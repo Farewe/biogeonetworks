@@ -1133,7 +1133,7 @@ megachilidae.clusters <- readInfomapTree("megachilidae.tree",
 ```
 
     ## Biogeographical network with up to 2 levels of complexity.
-    ## lvl1: 22 clusters/leaf nodes
+    ## lvl1: 20 clusters/leaf nodes
     ## lvl2: 382 clusters/leaf nodes
 
 ### Step 5 Analysing the results in R
@@ -1149,28 +1149,26 @@ plyr::count(megachilidae.cells$lvl1)
 ```
 
     ##     x freq
-    ## 1   1   19
-    ## 2   3   77
-    ## 3   2   34
-    ## 4   4   23
-    ## 5   5    9
+    ## 1   1  133
+    ## 2   2   11
+    ## 3   3   18
+    ## 4   4    6
+    ## 5   5    6
     ## 6   6    5
-    ## 7   8    9
-    ## 8   7    5
-    ## 9  10    5
-    ## 10 15    5
-    ## 11  9    2
-    ## 12 12    2
-    ## 13 11    3
-    ## 14 16    1
-    ## 15 13    3
-    ## 16 14    2
-    ## 17 17    1
-    ## 18 18    3
-    ## 19 19    3
+    ## 7   7    5
+    ## 8  13    5
+    ## 9   9    2
+    ## 10 10    2
+    ## 11 12    5
+    ## 12 11    2
+    ## 13 15    1
+    ## 14  8    2
+    ## 15 14    1
+    ## 16 16    3
+    ## 17 18    3
+    ## 18 17    2
+    ## 19 19    1
     ## 20 20    1
-    ## 21 21    1
-    ## 22 22    1
 
 We seem to have at least one big cluster, two small clusters, and a
 large number of tiny clusters (\<10 cells). This high number of tiny
@@ -1214,28 +1212,26 @@ cols
 ```
 
     ##     lvl1   color ID
-    ## 1      1 #000000  1
-    ## 108    2 #1F78B4  3
-    ## 160    3 #A6CEE3  2
-    ## 240    4 #B2DF8A  4
-    ## 280    5 #000000  5
-    ## 293    6 #000000  6
-    ## 303    7 #000000  8
-    ## 311    8 #000000  7
-    ## 320    9 #000000 11
-    ## 329   10 #000000  9
-    ## 336   11 #000000 13
-    ## 339   12 #000000 12
-    ## 346   13 #000000 15
-    ## 351   14 #000000 16
-    ## 353   15 #000000 10
-    ## 360   16 #000000 14
-    ## 365   17 #000000 17
-    ## 369   18 #000000 18
-    ## 374   19 #000000 19
-    ## 378   20 #000000 20
-    ## 379   21 #000000 21
-    ## 382   22 #000000 22
+    ## 14     1 #A6CEE3  1
+    ## 167    2 #B2DF8A  2
+    ## 256    3 #1F78B4  3
+    ## 282    4 #000000  4
+    ## 293    5 #000000  5
+    ## 302    6 #000000  6
+    ## 314    7 #000000  7
+    ## 322    8 #000000 14
+    ## 327    9 #000000  9
+    ## 334   10 #000000 10
+    ## 340   11 #000000 12
+    ## 346   12 #000000 11
+    ## 351   13 #000000  8
+    ## 359   14 #000000 15
+    ## 363   15 #000000 13
+    ## 368   16 #000000 16
+    ## 372   17 #000000 18
+    ## 376   18 #000000 17
+    ## 379   19 #000000 19
+    ## 382   20 #000000 20
 
 **Important**: When we apply `as.numeric` on the cluster column, it will
 return the positions of **factor levels**, which is why the numeric
@@ -1358,27 +1354,20 @@ lvl1metrics$species.stats <- lvl1metrics$species.stats[
 head(lvl1metrics$species.stats)
 ```
 
-    ##                                             species cluster Occ.Ri Occ.Di
-    ## Coelioxys.acanthura             Coelioxys.acanthura      16      1      1
-    ## Anthidiellum.breviusculum Anthidiellum.breviusculum      17      1      1
-    ## Megachile.fertoni                 Megachile.fertoni      16      1      1
-    ## Osmia.villosa                         Osmia.villosa      21      1      1
-    ## Probombus.hirsutus               Probombus.hirsutus      22      1      1
-    ## Megachile.sicula                   Megachile.sicula      15      4      4
-    ##                           Occ.Ai Occ.Fi Occ.IndVal Occ.DilVal       Ri       Di
-    ## Coelioxys.acanthura          1.0      1        1.0          0 2223.155 2223.155
-    ## Anthidiellum.breviusculum    1.0      1        1.0          0 2223.155 2223.155
-    ## Megachile.fertoni            1.0      1        1.0          0 2223.155 2223.155
-    ## Osmia.villosa                1.0      1        1.0          0 2128.229 2128.229
-    ## Probombus.hirsutus           1.0      1        1.0          0 2128.229 2128.229
-    ## Megachile.sicula             0.8      1        0.8          0 8903.360 8903.360
-    ##                                  Ai Fi    IndVal DilVal
-    ## Coelioxys.acanthura       1.0000000  1 1.0000000      0
-    ## Anthidiellum.breviusculum 1.0000000  1 1.0000000      0
-    ## Megachile.fertoni         1.0000000  1 1.0000000      0
-    ## Osmia.villosa             1.0000000  1 1.0000000      0
-    ## Probombus.hirsutus        1.0000000  1 1.0000000      0
-    ## Megachile.sicula          0.7937251  1 0.7937251      0
+    ##                                 species cluster Occ.Ri Occ.Di Occ.Ai Occ.Fi
+    ## Coelioxys.acanthura Coelioxys.acanthura      15      1      1      1      1
+    ## Osmia.cephalotes       Osmia.cephalotes       9      2      2      1      1
+    ## Osmia.ferruginea       Osmia.ferruginea      14      1      1      1      1
+    ## Megachile.fertoni     Megachile.fertoni      15      1      1      1      1
+    ## Osmia.villosa             Osmia.villosa      19      1      1      1      1
+    ## Osmia.niveocincta     Osmia.niveocincta      14      1      1      1      1
+    ##                     Occ.IndVal Occ.DilVal       Ri       Di Ai Fi IndVal DilVal
+    ## Coelioxys.acanthura          1          0 2223.155 2223.155  1  1      1      0
+    ## Osmia.cephalotes             1          0 4427.659 4427.659  1  1      1      0
+    ## Osmia.ferruginea             1          0 2278.077 2278.077  1  1      1      0
+    ## Megachile.fertoni            1          0 2223.155 2223.155  1  1      1      0
+    ## Osmia.villosa                1          0 2128.229 2128.229  1  1      1      0
+    ## Osmia.niveocincta            1          0 2278.077 2278.077  1  1      1      0
 
 Tiny clusters tend to always be first in this table, because they are
 often composed of only one species occurring only in the cluster,
@@ -1390,27 +1379,27 @@ Let’s focus on big clusters only:
 head(lvl1metrics$species.stats[which(lvl1metrics$species.stats$cluster %in% 1:3), ])
 ```
 
-    ##                                         species cluster Occ.Ri Occ.Di    Occ.Ai
-    ## Megachile.pyrenaea           Megachile.pyrenaea       1      8      8 0.4210526
-    ## Megachile.circumcincta   Megachile.circumcincta       1      8      9 0.4210526
-    ## Osmia.cornuta                     Osmia.cornuta       3     54    104 0.7012987
-    ## Megachile.pyrenaica         Megachile.pyrenaica       1      8     10 0.4210526
-    ## Osmia.andrenoides             Osmia.andrenoides       1      7      8 0.3684211
-    ## Chelostoma.campanularum Chelostoma.campanularum       1      7      8 0.3684211
-    ##                            Occ.Fi Occ.IndVal Occ.DilVal        Ri        Di
-    ## Megachile.pyrenaea      1.0000000  0.4210526 0.00000000  17538.41  17538.41
-    ## Megachile.circumcincta  0.8888889  0.3742690 0.04678363  17241.39  19427.07
-    ## Osmia.cornuta           0.5192308  0.3641359 0.33716284 113023.23 220545.08
-    ## Megachile.pyrenaica     0.8000000  0.3368421 0.08421053  17558.76  21948.95
-    ## Osmia.andrenoides       0.8750000  0.3223684 0.04605263  15487.14  17691.65
-    ## Chelostoma.campanularum 0.8750000  0.3223684 0.04605263  15446.65  17669.80
-    ##                                Ai        Fi    IndVal     DilVal
-    ## Megachile.pyrenaea      0.4285332 1.0000000 0.4285332 0.00000000
-    ## Megachile.circumcincta  0.4212758 0.8874928 0.3738792 0.04739655
-    ## Osmia.cornuta           0.7023606 0.5124722 0.3599403 0.34242031
-    ## Megachile.pyrenaica     0.4290305 0.7999818 0.3432166 0.08581391
-    ## Osmia.andrenoides       0.3784126 0.8753929 0.3312597 0.04715289
-    ## Chelostoma.campanularum 0.3774231 0.8741834 0.3299370 0.04748610
+    ##                                             species cluster Occ.Ri Occ.Di
+    ## Megachile.pyrenaea               Megachile.pyrenaea       2      7      8
+    ## Chelostoma.campanularum     Chelostoma.campanularum       2      7      9
+    ## Hoplitis.benoisti                 Hoplitis.benoisti       2      5      5
+    ## Rhodanthidium.caturigense Rhodanthidium.caturigense       2      5      5
+    ## Megachile.analis                   Megachile.analis       2      5      5
+    ## Hoplitis.mitis                       Hoplitis.mitis       2      5      5
+    ##                              Occ.Ai    Occ.Fi Occ.IndVal Occ.DilVal       Ri
+    ## Megachile.pyrenaea        0.6363636 0.8750000  0.5568182 0.07954545 15352.72
+    ## Chelostoma.campanularum   0.6363636 0.7777778  0.4949495 0.14141414 15446.65
+    ## Hoplitis.benoisti         0.4545455 1.0000000  0.4545455 0.00000000 11133.40
+    ## Rhodanthidium.caturigense 0.4545455 1.0000000  0.4545455 0.00000000 11133.40
+    ## Megachile.analis          0.4545455 1.0000000  0.4545455 0.00000000 11095.93
+    ## Hoplitis.mitis            0.4545455 1.0000000  0.4545455 0.00000000 11095.93
+    ##                                 Di        Ai        Fi    IndVal     DilVal
+    ## Megachile.pyrenaea        17538.41 0.6346927 0.8753772 0.5555955 0.07909718
+    ## Chelostoma.campanularum   19758.91 0.6385756 0.7817562 0.4992104 0.13936520
+    ## Hoplitis.benoisti         11133.40 0.4602627 1.0000000 0.4602627 0.00000000
+    ## Rhodanthidium.caturigense 11133.40 0.4602627 1.0000000 0.4602627 0.00000000
+    ## Megachile.analis          11095.93 0.4587137 1.0000000 0.4587137 0.00000000
+    ## Hoplitis.mitis            11095.93 0.4587137 1.0000000 0.4587137 0.00000000
 
 After consulting my friend Benoît Geslin who is a bee expert, the
 results make sense. The mediterranean cluster is driven by an introduced

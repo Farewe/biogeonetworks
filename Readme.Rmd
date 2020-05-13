@@ -599,6 +599,12 @@ head(lvl1metrics$site.stats)
 
 # Biogeographical networks, a second example with raster maps
 
+
+```{r eval=TRUE,echo=FALSE}
+rm(list = ls())
+```
+
+
 For this example I will be using occurrence data which I will transform into 
 raster data - I suspect this is the most common type of data that people are 
 working with. I decided to make an example on the basis of spiders as they
