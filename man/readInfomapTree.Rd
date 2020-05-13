@@ -4,8 +4,7 @@
 \alias{readInfomapTree}
 \title{Read the infomap (Map Equation) output tree}
 \usage{
-readInfomapTree(file, network.summary = TRUE,
-  replace.leaf.names = TRUE)
+readInfomapTree(file, network.summary = TRUE, replace.leaf.names = TRUE)
 }
 \arguments{
 \item{file}{the .tree file written by infomap.}

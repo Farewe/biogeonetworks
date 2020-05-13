@@ -4,10 +4,18 @@
 \alias{writeGDF}
 \title{Write a biogeographical network in GDF (Gephi) format}
 \usage{
-writeGDF(db, network = NULL, site.field = colnames(db)[1],
-  species.field = colnames(db)[2], filename, color.field = NULL,
-  abundance.field = NULL, hex2rgb = TRUE, directed = FALSE,
-  additional.fields = NULL)
+writeGDF(
+  db,
+  network = NULL,
+  site.field = colnames(db)[1],
+  species.field = colnames(db)[2],
+  filename,
+  color.field = NULL,
+  abundance.field = NULL,
+  hex2rgb = TRUE,
+  directed = FALSE,
+  additional.fields = NULL
+)
 }
 \arguments{
 \item{db}{a data.frame with at least two columns, site and species}

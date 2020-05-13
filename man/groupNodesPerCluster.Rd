@@ -4,9 +4,16 @@
 \alias{groupNodesPerCluster}
 \title{Simplify the network into major clusters}
 \usage{
-groupNodesPerCluster(db, site.field = 1, species.field = 2, network,
-  level = "lvl1", directed = FALSE, color.field = NULL,
-  abundance.field = NULL)
+groupNodesPerCluster(
+  db,
+  site.field = 1,
+  species.field = 2,
+  network,
+  level = "lvl1",
+  directed = FALSE,
+  color.field = NULL,
+  abundance.field = NULL
+)
 }
 \arguments{
 \item{db}{the database that was used to construct the network.}

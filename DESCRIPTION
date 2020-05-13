@@ -1,7 +1,7 @@
 Package: biogeonetworks
 Type: Package
 Title: Biogeographical Network Manipulation And Analysis
-Version: 0.1.1
+Version: 0.1.2
 Author: Boris Leroy
 Maintainer: Boris Leroy <boris.leroy@gmail.com>
 Description: Several functions designed to write, read and analyse 
@@ -10,4 +10,4 @@ Description: Several functions designed to write, read and analyse
 License: GPL (>= 2.0)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2

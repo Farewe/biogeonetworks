@@ -24,8 +24,8 @@ Biogeographical networks in R
       - [Step 6 Make maps](#step-6-make-maps)
       - [Step 7 Write the network for visualisation in
         Gephi](#step-7-write-the-network-for-visualisation-in-gephi)
-      - [Calculation of the Participation
-        Coefficient](#calculation-of-the-participation-coefficient)
+      - [Step 8 Calculation of metrics for the
+        network](#step-8-calculation-of-metrics-for-the-network)
   - [Biogeographical networks, a second example with raster
     maps](#biogeographical-networks-a-second-example-with-raster-maps)
       - [Get occurrence data points and transform them into
@@ -41,6 +41,10 @@ Biogeographical networks in R
       - [Step 5 Analysing the results in
         R](#step-5-analysing-the-results-in-r)
       - [Step 6 Make raster maps\!](#step-6-make-raster-maps)
+      - [Step 8.1 Participation
+        Coefficient](#step-8.1-participation-coefficient)
+      - [Step 8.2 IndVal, DilVal and
+        robustness](#step-8.2-indval-dilval-and-robustness)
   - [Credits](#credits)
 
 biogeonetworks is an R package that implements several functions to
@@ -126,14 +130,14 @@ library(rgdal)
 
     ## Loading required package: sp
 
-    ## rgdal: version: 1.3-6, (SVN revision 773)
+    ## rgdal: version: 1.4-8, (SVN revision 845)
     ##  Geospatial Data Abstraction Library extensions to R successfully loaded
     ##  Loaded GDAL runtime: GDAL 2.2.3, released 2017/11/20
-    ##  Path to GDAL shared files: C:/Users/Boris/Documents/R/win-library/3.5/rgdal/gdal
+    ##  Path to GDAL shared files: C:/Users/Farewell20/Documents/R/win-library/3.6/rgdal/gdal
     ##  GDAL binary built with GEOS: TRUE 
     ##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
-    ##  Path to PROJ.4 shared files: C:/Users/Boris/Documents/R/win-library/3.5/rgdal/proj
-    ##  Linking to sp version: 1.3-1
+    ##  Path to PROJ.4 shared files: C:/Users/Farewell20/Documents/R/win-library/3.6/rgdal/proj
+    ##  Linking to sp version: 1.3-2
 
 ``` r
 download.file("https://borisleroy.com/permanent/basinshapefile.RDS",
@@ -268,7 +272,7 @@ generated at step 2), and then the output folder.
 command line, as paths are not written the same as in windows.*
 
 ``` r
-system("infomap --undirected --tree --map -N 1000 fish.net ./")
+system("infomap --undirected --tree --map -N 100 fish.net ./")
 ```
 
 Infomap is very talkative and your console is now filled with
@@ -304,17 +308,17 @@ We read the “fish.tree” file in R with the function `readInfomapTree()`.
 
 ``` r
 fish.clusters <- readInfomapTree("fish.tree",
-      network.summary = TRUE, # Prints a summary of the clustering results
-      replace.leaf.names = TRUE) # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
+                                 network.summary = TRUE, # Prints a summary of the clustering results
+                                 replace.leaf.names = TRUE) # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
 ```
 
     ## Biogeographical network with up to 6 levels of complexity.
     ## lvl1: 16 clusters/leaf nodes
     ## lvl2: 48 clusters/leaf nodes
-    ## lvl3: 162 clusters/leaf nodes
-    ## lvl4: 8550 clusters/leaf nodes
-    ## lvl5: 5263 clusters/leaf nodes
-    ## lvl6: 60 clusters/leaf nodes
+    ## lvl3: 146 clusters/leaf nodes
+    ## lvl4: 8716 clusters/leaf nodes
+    ## lvl5: 4073 clusters/leaf nodes
+    ## lvl6: 1110 clusters/leaf nodes
 
 Let’s inspect the generated object:
 
@@ -322,20 +326,20 @@ Let’s inspect the generated object:
 head(fish.clusters)
 ```
 
-    ##      Groups Codelength                       Name    id lvl1 lvl2  lvl3
-    ## 1 1:1:1:1:1 0.00249272 Misgurnus anguillicaudatus  6740    1  1.1 1.1.1
-    ## 2 1:1:1:1:2 0.00235797          Carassius auratus  2051    1  1.1 1.1.1
-    ## 3 1:1:1:1:3 0.00182743             Silurus asotus 10058    1  1.1 1.1.1
-    ## 4 1:1:1:1:4 0.00179374           Monopterus albus  6833    1  1.1 1.1.1
-    ## 5 1:1:1:1:5 0.00170111             Zacco platypus 11276    1  1.1 1.1.1
-    ## 6 1:1:1:1:6 0.00146531        Pseudorasbora parva  9070    1  1.1 1.1.1
-    ##      lvl4                       lvl5 lvl6
-    ## 1 1.1.1.1 Misgurnus anguillicaudatus <NA>
-    ## 2 1.1.1.1          Carassius auratus <NA>
-    ## 3 1.1.1.1             Silurus asotus <NA>
-    ## 4 1.1.1.1           Monopterus albus <NA>
-    ## 5 1.1.1.1             Zacco platypus <NA>
-    ## 6 1.1.1.1        Pseudorasbora parva <NA>
+    ##        Groups Codelength        Name    id lvl1 lvl2  lvl3    lvl4      lvl5
+    ## 1 1:1:1:1:1:1 0.00213902      Kapuas 12245    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 2 1:1:1:1:1:2 0.00160848      Pahang 12915    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 3 1:1:1:1:1:3 0.00131373     Mahakam 12569    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 4 1:1:1:1:1:4 0.00124636 Batang.Hari 11477    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 5 1:1:1:1:1:5 0.00106951       Perak 12984    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 6 1:1:1:1:1:6 0.00102740      Rajang 13107    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ##          lvl6
+    ## 1      Kapuas
+    ## 2      Pahang
+    ## 3     Mahakam
+    ## 4 Batang.Hari
+    ## 5       Perak
+    ## 6      Rajang
 
 In this table, each row corresponds to one node (i.e., one site or one
 species) of the network. The columns provide information for each node:
@@ -385,8 +389,8 @@ Let’s start with the numbers of clusters at level 1 and level 2:
 levels(fish.clusters$lvl1)
 ```
 
-    ##  [1] "1"  "2"  "3"  "4"  "5"  "6"  "7"  "10" "11" "8"  "9"  "12" "13" "14"
-    ## [15] "15" "16"
+    ##  [1] "1"  "2"  "3"  "4"  "5"  "6"  "7"  "10" "11" "8"  "9"  "12" "13" "14" "15"
+    ## [16] "16"
 
 ``` r
 levels(fish.clusters$lvl2)
@@ -394,9 +398,9 @@ levels(fish.clusters$lvl2)
 
     ##  [1] "2.1"                        "1.1"                       
     ##  [3] "1.2"                        "2.2"                       
-    ##  [5] "1.3"                        "1.4"                       
-    ##  [7] "4.1"                        "3.1"                       
-    ##  [9] "2.3"                        "5.1"                       
+    ##  [5] "1.3"                        "2.3"                       
+    ##  [7] "1.4"                        "4.1"                       
+    ##  [9] "3.1"                        "5.1"                       
     ## [11] "3.2"                        "3.3"                       
     ## [13] "3.4"                        "5.2"                       
     ## [15] "5.3"                        "4.2"                       
@@ -460,8 +464,8 @@ First, let’s make a table composed only of site nodes:
 
 ``` r
 fish.sites <- getSiteTable(fish, # Your bipartite data.frame of STEP 1
-   site.field = "X1.Basin.Name", # Name of your site column
-   network = fish.clusters) # Output table from Map Equation
+                           site.field = "X1.Basin.Name", # Name of your site column
+                           network = fish.clusters) # Output table from Map Equation
 
 plyr::count(fish.sites$lvl1)
 ```
@@ -492,8 +496,8 @@ Let’s look at the species table now:
 
 ``` r
 fish.species <- getSpeciesTable(fish, # Your bipartite data.frame of STEP 1
-   species.field = "X6.Fishbase.Valid.Species.Name", # Name of your species column
-   network = fish.clusters) # Output table from Map Equation
+                                species.field = "X6.Fishbase.Valid.Species.Name", # Name of your species column
+                                network = fish.clusters) # Output table from Map Equation
 
 plyr::count(fish.species$lvl1)
 ```
@@ -529,15 +533,15 @@ plyr::count(fish.sites$lvl2)
 ```
 
     ##                        x freq
-    ## 1                    2.1  378
+    ## 1                    2.1  246
     ## 2                    1.1  719
-    ## 3                    1.2  280
-    ## 4                    2.2  262
-    ## 5                    1.3  507
-    ## 6                    1.4  382
-    ## 7                    4.1   15
-    ## 8                    3.1    4
-    ## 9                    2.3    4
+    ## 3                    1.2  272
+    ## 4                    2.2  267
+    ## 5                    1.3  515
+    ## 6                    2.3  131
+    ## 7                    1.4  382
+    ## 8                    4.1   15
+    ## 9                    3.1    4
     ## 10                   5.1    5
     ## 11                   3.2    1
     ## 12                   3.3    1
@@ -569,15 +573,15 @@ plyr::count(fish.species$lvl2)
 ```
 
     ##                             x freq
-    ## 1                         2.1 4750
-    ## 2                         1.1 2463
-    ## 3                         1.2 2678
-    ## 4                         2.2  820
-    ## 5                         1.3  460
-    ## 6                         1.4   78
-    ## 7                         4.1    2
-    ## 8                         3.1    9
-    ## 9                         2.3    6
+    ## 1                         2.1 4088
+    ## 2                         1.1 2464
+    ## 3                         1.2 2675
+    ## 4                         2.2  828
+    ## 5                         1.3  462
+    ## 6                         2.3  660
+    ## 7                         1.4   78
+    ## 8                         4.1    2
+    ## 9                         3.1    9
     ## 10                        5.1    1
     ## 11                        3.2    4
     ## 12                        3.3    3
@@ -631,14 +635,14 @@ should always assign the result of the function to this same
 
 ``` r
 fish.clusters <- attributeColors(network = fish.clusters, # Same object as input & output
-    lvl = "lvl1", # Which hierarchical level are we working on?
-    nb.max.colors = 2, # We chose two clusters as significant for level 1
-    colname = "colors.lvl1", # Name to give to the colour column
-    other.color = "black", # Minor clusters will be black
-    cluster.order = "sites", # Cluster order for colours (see below)
-    db = fish, # Database of step 1
-    site.field = "X1.Basin.Name", # Name of site column in your database
-    species.field = "X6.Fishbase.Valid.Species.Name") # Name of species column in your database
+                                 lvl = "lvl1", # Which hierarchical level are we working on?
+                                 nb.max.colors = 2, # We chose two clusters as significant for level 1
+                                 colname = "colors.lvl1", # Name to give to the colour column
+                                 other.color = grey(0.5), # Minor clusters will be black
+                                 cluster.order = "sites", # Cluster order for colours (see below)
+                                 db = fish, # Database of step 1
+                                 site.field = "X1.Basin.Name", # Name of site column in your database
+                                 species.field = "X6.Fishbase.Valid.Species.Name") # Name of species column in your database
 ```
 
     ## Loading required package: RColorBrewer
@@ -647,20 +651,20 @@ fish.clusters <- attributeColors(network = fish.clusters, # Same object as input
 head(fish.clusters)
 ```
 
-    ##      Groups Codelength                       Name    id lvl1 lvl2  lvl3
-    ## 1 1:1:1:1:1 0.00249272 Misgurnus anguillicaudatus  6740    1  1.1 1.1.1
-    ## 2 1:1:1:1:2 0.00235797          Carassius auratus  2051    1  1.1 1.1.1
-    ## 3 1:1:1:1:3 0.00182743             Silurus asotus 10058    1  1.1 1.1.1
-    ## 4 1:1:1:1:4 0.00179374           Monopterus albus  6833    1  1.1 1.1.1
-    ## 5 1:1:1:1:5 0.00170111             Zacco platypus 11276    1  1.1 1.1.1
-    ## 6 1:1:1:1:6 0.00146531        Pseudorasbora parva  9070    1  1.1 1.1.1
-    ##      lvl4                       lvl5 lvl6 colors.lvl1
-    ## 1 1.1.1.1 Misgurnus anguillicaudatus <NA>     #A6CEE3
-    ## 2 1.1.1.1          Carassius auratus <NA>     #A6CEE3
-    ## 3 1.1.1.1             Silurus asotus <NA>     #A6CEE3
-    ## 4 1.1.1.1           Monopterus albus <NA>     #A6CEE3
-    ## 5 1.1.1.1             Zacco platypus <NA>     #A6CEE3
-    ## 6 1.1.1.1        Pseudorasbora parva <NA>     #A6CEE3
+    ##        Groups Codelength        Name    id lvl1 lvl2  lvl3    lvl4      lvl5
+    ## 1 1:1:1:1:1:1 0.00213902      Kapuas 12245    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 2 1:1:1:1:1:2 0.00160848      Pahang 12915    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 3 1:1:1:1:1:3 0.00131373     Mahakam 12569    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 4 1:1:1:1:1:4 0.00124636 Batang.Hari 11477    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 5 1:1:1:1:1:5 0.00106951       Perak 12984    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 6 1:1:1:1:1:6 0.00102740      Rajang 13107    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ##          lvl6 colors.lvl1
+    ## 1      Kapuas     #A6CEE3
+    ## 2      Pahang     #A6CEE3
+    ## 3     Mahakam     #A6CEE3
+    ## 4 Batang.Hari     #A6CEE3
+    ## 5       Perak     #A6CEE3
+    ## 6      Rajang     #A6CEE3
 
 As you can see, a column called `colors.lvl1` was added to our
 `fish.clusters` object, and it contains hexadecimal colour codes. We
@@ -692,31 +696,31 @@ level 2 of our analyses:
 
 ``` r
 fish.clusters <- attributeColors(network = fish.clusters, # Same object as input & output
-    lvl = "lvl2", # Which hierarchical level are we working on?
-    nb.max.colors = 6, # We chose two clusters as significant for level 2
-    colname = "colors.lvl2", # Name to give to the colour column
-    other.color = "black", # Minor clusters will be black
-    cluster.order = "sites", # Cluster order for colours (see below)
-    db = fish, # Database of step 1
-    site.field = "X1.Basin.Name", # Name of site column in your database
-    species.field = "X6.Fishbase.Valid.Species.Name") # Name of species column in your database
+                                 lvl = "lvl2", # Which hierarchical level are we working on?
+                                 nb.max.colors = 6, # We chose two clusters as significant for level 2
+                                 colname = "colors.lvl2", # Name to give to the colour column
+                                 other.color = "black", # Minor clusters will be black
+                                 cluster.order = "sites", # Cluster order for colours (see below)
+                                 db = fish, # Database of step 1
+                                 site.field = "X1.Basin.Name", # Name of site column in your database
+                                 species.field = "X6.Fishbase.Valid.Species.Name") # Name of species column in your database
 head(fish.clusters)
 ```
 
-    ##      Groups Codelength                       Name    id lvl1 lvl2  lvl3
-    ## 1 1:1:1:1:1 0.00249272 Misgurnus anguillicaudatus  6740    1  1.1 1.1.1
-    ## 2 1:1:1:1:2 0.00235797          Carassius auratus  2051    1  1.1 1.1.1
-    ## 3 1:1:1:1:3 0.00182743             Silurus asotus 10058    1  1.1 1.1.1
-    ## 4 1:1:1:1:4 0.00179374           Monopterus albus  6833    1  1.1 1.1.1
-    ## 5 1:1:1:1:5 0.00170111             Zacco platypus 11276    1  1.1 1.1.1
-    ## 6 1:1:1:1:6 0.00146531        Pseudorasbora parva  9070    1  1.1 1.1.1
-    ##      lvl4                       lvl5 lvl6 colors.lvl1 colors.lvl2
-    ## 1 1.1.1.1 Misgurnus anguillicaudatus <NA>     #A6CEE3     #A6CEE3
-    ## 2 1.1.1.1          Carassius auratus <NA>     #A6CEE3     #A6CEE3
-    ## 3 1.1.1.1             Silurus asotus <NA>     #A6CEE3     #A6CEE3
-    ## 4 1.1.1.1           Monopterus albus <NA>     #A6CEE3     #A6CEE3
-    ## 5 1.1.1.1             Zacco platypus <NA>     #A6CEE3     #A6CEE3
-    ## 6 1.1.1.1        Pseudorasbora parva <NA>     #A6CEE3     #A6CEE3
+    ##        Groups Codelength        Name    id lvl1 lvl2  lvl3    lvl4      lvl5
+    ## 1 1:1:1:1:1:1 0.00213902      Kapuas 12245    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 2 1:1:1:1:1:2 0.00160848      Pahang 12915    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 3 1:1:1:1:1:3 0.00131373     Mahakam 12569    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 4 1:1:1:1:1:4 0.00124636 Batang.Hari 11477    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 5 1:1:1:1:1:5 0.00106951       Perak 12984    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 6 1:1:1:1:1:6 0.00102740      Rajang 13107    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ##          lvl6 colors.lvl1 colors.lvl2
+    ## 1      Kapuas     #A6CEE3     #A6CEE3
+    ## 2      Pahang     #A6CEE3     #A6CEE3
+    ## 3     Mahakam     #A6CEE3     #A6CEE3
+    ## 4 Batang.Hari     #A6CEE3     #A6CEE3
+    ## 5       Perak     #A6CEE3     #A6CEE3
+    ## 6      Rajang     #A6CEE3     #A6CEE3
 
 ## Step 6 Make maps
 
@@ -738,20 +742,20 @@ basins@data$colors.lvl1 <- fish.clusters$colors.lvl1[match(
 head(basins@data)
 ```
 
-    ##       BasinName   Country Ecoregion Endorheic Out_Longit  Out_Latit
-    ## 0  Cachoeirinha    Brazil Neotropic      <NA>  -43.10344 -22.693658
-    ## 1      Comprido    Brazil Neotropic      <NA>  -47.07734 -24.451571
-    ## 2 Arroyo.Walker Argentina Neotropic      <NA>  -62.29922 -40.628898
-    ## 3     Aconcagua     Chile Neotropic      <NA>  -71.53604 -32.912822
-    ## 4        Amazon    Brazil Neotropic      <NA>  -52.23409  -1.619426
-    ## 5      Andalien     Chile Neotropic      <NA>  -73.09136 -36.664541
-    ##   Med_Longit  Med_Latit    Surf_area colors.lvl1
-    ## 0  -43.06899 -22.595111     228.8151     #B2DF8A
-    ## 1  -47.15300 -24.465831     204.7977     #B2DF8A
-    ## 2  -62.59625 -40.507344     969.1561     #B2DF8A
-    ## 3  -70.65645 -32.770645    7318.8768     #B2DF8A
-    ## 4  -64.57286  -6.714857 5888416.9156     #B2DF8A
-    ## 5  -72.81968 -36.824925     767.4691     #B2DF8A
+    ##       BasinName   Country Ecoregion Endorheic Out_Longit  Out_Latit Med_Longit
+    ## 0  Cachoeirinha    Brazil Neotropic      <NA>  -43.10344 -22.693658  -43.06899
+    ## 1      Comprido    Brazil Neotropic      <NA>  -47.07734 -24.451571  -47.15300
+    ## 2 Arroyo.Walker Argentina Neotropic      <NA>  -62.29922 -40.628898  -62.59625
+    ## 3     Aconcagua     Chile Neotropic      <NA>  -71.53604 -32.912822  -70.65645
+    ## 4        Amazon    Brazil Neotropic      <NA>  -52.23409  -1.619426  -64.57286
+    ## 5      Andalien     Chile Neotropic      <NA>  -73.09136 -36.664541  -72.81968
+    ##    Med_Latit    Surf_area colors.lvl1
+    ## 0 -22.595111     228.8151     #B2DF8A
+    ## 1 -24.465831     204.7977     #B2DF8A
+    ## 2 -40.507344     969.1561     #B2DF8A
+    ## 3 -32.770645    7318.8768     #B2DF8A
+    ## 4  -6.714857 5888416.9156     #B2DF8A
+    ## 5 -36.824925     767.4691     #B2DF8A
 
 Now making the map is relatively straightforward:
 
@@ -815,11 +819,11 @@ column.
 
 ``` r
 writeGDF(db = fish, # Database of step 1
-    site.field = "X1.Basin.Name", # Name of site column in your database
-    species.field = "X6.Fishbase.Valid.Species.Name", # Name of species column in your database
-    network = fish.clusters, 
-    filename = "fish.gdf",
-    color.field = "colors.lvl2") # Name of the color field in the network
+         site.field = "X1.Basin.Name", # Name of site column in your database
+         species.field = "X6.Fishbase.Valid.Species.Name", # Name of species column in your database
+         network = fish.clusters, 
+         filename = "fish.gdf",
+         color.field = "colors.lvl2") # Name of the color field in the network
 ```
 
 Notice how I chose to colour nodes according to the second level here.
@@ -838,7 +842,9 @@ useful to understand patterns or discover errors in your datasets (e.g.,
 strange links between regions may indicate records of introduced
 species\!).
 
-## Calculation of the Participation Coefficient
+## Step 8 Calculation of metrics for the network
+
+### 8.1 The Participation Coefficient
 
 The Participation Coefficient, introduced by [Bloomfield et
 al. 2018](https://onlinelibrary.wiley.com/doi/full/10.1111/ecog.02596),
@@ -868,27 +874,20 @@ fish.clusters <- participationCoefficient(
 head(fish.clusters)
 ```
 
-    ##      Groups Codelength                       Name    id lvl1 lvl2  lvl3
-    ## 1 1:1:1:1:1 0.00249272 Misgurnus anguillicaudatus  6740    1  1.1 1.1.1
-    ## 2 1:1:1:1:2 0.00235797          Carassius auratus  2051    1  1.1 1.1.1
-    ## 3 1:1:1:1:3 0.00182743             Silurus asotus 10058    1  1.1 1.1.1
-    ## 4 1:1:1:1:4 0.00179374           Monopterus albus  6833    1  1.1 1.1.1
-    ## 5 1:1:1:1:5 0.00170111             Zacco platypus 11276    1  1.1 1.1.1
-    ## 6 1:1:1:1:6 0.00146531        Pseudorasbora parva  9070    1  1.1 1.1.1
-    ##      lvl4                       lvl5 lvl6 colors.lvl1 colors.lvl2
-    ## 1 1.1.1.1 Misgurnus anguillicaudatus <NA>     #A6CEE3     #A6CEE3
-    ## 2 1.1.1.1          Carassius auratus <NA>     #A6CEE3     #A6CEE3
-    ## 3 1.1.1.1             Silurus asotus <NA>     #A6CEE3     #A6CEE3
-    ## 4 1.1.1.1           Monopterus albus <NA>     #A6CEE3     #A6CEE3
-    ## 5 1.1.1.1             Zacco platypus <NA>     #A6CEE3     #A6CEE3
-    ## 6 1.1.1.1        Pseudorasbora parva <NA>     #A6CEE3     #A6CEE3
-    ##   participation.coef
-    ## 1          0.0000000
-    ## 2          0.1014031
-    ## 3          0.0000000
-    ## 4          0.0000000
-    ## 5          0.0000000
-    ## 6          0.0000000
+    ##        Groups Codelength        Name    id lvl1 lvl2  lvl3    lvl4      lvl5
+    ## 1 1:1:1:1:1:1 0.00213902      Kapuas 12245    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 2 1:1:1:1:1:2 0.00160848      Pahang 12915    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 3 1:1:1:1:1:3 0.00131373     Mahakam 12569    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 4 1:1:1:1:1:4 0.00124636 Batang.Hari 11477    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 5 1:1:1:1:1:5 0.00106951       Perak 12984    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ## 6 1:1:1:1:1:6 0.00102740      Rajang 13107    1  1.1 1.1.1 1.1.1.1 1.1.1.1.1
+    ##          lvl6 colors.lvl1 colors.lvl2 participation.coef
+    ## 1      Kapuas     #A6CEE3     #A6CEE3         0.00000000
+    ## 2      Pahang     #A6CEE3     #A6CEE3         0.01041638
+    ## 3     Mahakam     #A6CEE3     #A6CEE3         0.01273833
+    ## 4 Batang.Hari     #A6CEE3     #A6CEE3         0.00000000
+    ## 5       Perak     #A6CEE3     #A6CEE3         0.01562403
+    ## 6      Rajang     #A6CEE3     #A6CEE3         0.00000000
 
 Now let’s make a map of our participation coefficient; for this map I
 will use the tmap packages, as it makes beautiful maps really easily.
@@ -901,9 +900,13 @@ basins@data$PC <- fish.clusters$participation.coef[match(
 library(tmap)
 
 tm_shape(basins, projection = "robin") + # Make a nice projection as well!
- tm_polygons("PC") +
- tm_layout(legend.position = c("left", "bottom"))
+  tm_polygons("PC") +
+  tm_layout(legend.position = c("left", "bottom"))
 ```
+
+    ## Warning: The shape basins is invalid. See sf::st_is_valid
+
+    ## Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3
 
 ![](Readme_files/figure-gfm/pc2-1.png)<!-- -->
 
@@ -911,6 +914,70 @@ And here is the transition zones maps\! In case you wonder, the
 differences between the results here and those in our paper correspond
 to the *post-hoc* changes we made to the minor clusters (see Appendix
 S5).
+
+### 8.2 Another set of metrics: IndVal, DilVal and robustness
+
+Description to be added here in the future
+
+``` r
+site.area <- data.frame(name = basins$BasinName,
+                        area = basins$Surf_area)
+
+lvl1metrics <- clusterMetrics(db = fish, # Database of step 1
+                              network = fish.clusters, # Clustering results
+                              site.field = "X1.Basin.Name", # Name of site column in your database
+                              species.field = "X6.Fishbase.Valid.Species.Name", # Name of species column in your database
+                              site.area = site.area, # A data.frame containing at least two columns with site name ("name") and site surface ("surface")
+                              level = "lvl1") # Clustering evel at which we calculate metrics
+
+head(lvl1metrics$region.stats)
+```
+
+    ##   region nb.sites        area
+    ## 1      1     1888 67354732.02
+    ## 2      2      644 30325232.78
+    ## 3      3        8   109698.98
+    ## 4      4       16    38545.18
+    ## 5      5        7    20495.35
+    ## 6      6        3   374715.84
+
+``` r
+head(lvl1metrics$species.stats)
+```
+
+    ##                                         species cluster Occ.Ri Occ.Di
+    ## Aaptosyax grypus               Aaptosyax grypus       1      1      1
+    ## Abactochromis labrosus   Abactochromis labrosus       1      1      1
+    ## Abbottina liaoningensis Abbottina liaoningensis       1      5      5
+    ## Abbottina obtusirostris Abbottina obtusirostris       1      1      1
+    ## Abbottina rivularis         Abbottina rivularis       1     71     71
+    ## Abbottina springeri         Abbottina springeri       1     25     25
+    ##                              Occ.Ai Occ.Fi  Occ.IndVal Occ.DilVal         Ri
+    ## Aaptosyax grypus        0.000529661      1 0.000529661          0  772599.35
+    ## Abactochromis labrosus  0.000529661      1 0.000529661          0  127828.37
+    ## Abbottina liaoningensis 0.002648305      1 0.002648305          0 4207258.62
+    ## Abbottina obtusirostris 0.000529661      1 0.000529661          0 1913756.21
+    ## Abbottina rivularis     0.037605932      1 0.037605932          0 6058422.41
+    ## Abbottina springeri     0.013241525      1 0.013241525          0   81160.36
+    ##                                 Di          Ai Fi      IndVal DilVal
+    ## Aaptosyax grypus         772599.35 0.011470602  1 0.011470602      0
+    ## Abactochromis labrosus   127828.37 0.001897838  1 0.001897838      0
+    ## Abbottina liaoningensis 4207258.62 0.062464188  1 0.062464188      0
+    ## Abbottina obtusirostris 1913756.21 0.028413092  1 0.028413092      0
+    ## Abbottina rivularis     6058422.41 0.089947985  1 0.089947985      0
+    ## Abbottina springeri       81160.36 0.001204969  1 0.001204969      0
+
+``` r
+head(lvl1metrics$site.stats)
+```
+
+    ##                    site cluster     Occ.Rg     Occ.RRg         Rg        RRg
+    ## Aa                   Aa       1 1.07940981 0.083031524 2.11187658 0.16245204
+    ## Abashiri       Abashiri       1 0.06991525 0.069915254 0.03525847 0.03525847
+    ## Abhe.Bad       Abhe.Bad       1 0.09322034 0.009322034 0.91494189 0.09149419
+    ## Abogain.Gol Abogain.Gol       1 0.03495763 0.005826271 0.35315965 0.05885994
+    ## Abu.gawa       Abu.gawa       1 0.18326271 0.045815678 0.05899609 0.01474902
+    ## Abukuma         Abukuma       1 0.23675847 0.059189619 0.22367040 0.05591760
 
 # Biogeographical networks, a second example with raster maps
 
@@ -931,39 +998,44 @@ install.packages(c("rgbif", "reshape2"))
 
 ### Get occurrence data points and transform them into rasters
 
-I will use the package rgbif to download spider occurrence data in
-France, for the family Salticidae. I chose jumping spiders (Salticidae)
-because I know they are particularly sensitive to climatic conditions
-and I have always heard my arachnologist colleagues says that jumping
-spiders of southern France are much different from jumping spiders of
-the rest of France. Therefore, I expect to see at least two clusters,
-one for the mediterranean part of France, and another for the rest of
-France.
+I will use the package rgbif to download occurrence data in France, for
+the bee family megachilidae (they are funny large bees). I chose them
+because they have enough data in France to be able to look for
+bioregions, and I have a friend working on them.
+
+**Warning: the rgbif package takes a while to proceed**
 
 ``` r
 library(rgbif)
-salticidae <- occ_search(scientificName = "Salticidae", country = "FR",
-                hasCoordinate = TRUE,
-                limit = 20000,
-                return = "data")
+```
+
+    ## Warning: package 'rgbif' was built under R version 3.6.3
+
+``` r
+megachilidae <- occ_search(scientificName = "Megachilidae", country = "FR",
+                           hasCoordinate = TRUE,
+                           limit = 20000,
+                           return = "data")
 
 ## A quick cleaning of the data
 # We keep only the important columns here (remember you will have to cite data
 # sources if you do this for a publication!)
-salticidae <- salticidae[, c("species", "decimalLongitude", "decimalLatitude")]
+megachilidae <- megachilidae[, c("species", "decimalLongitude", "decimalLatitude")]
 # Remove data with no valid species name
-salticidae <- salticidae[-which(is.na(salticidae$species)), ]
+megachilidae <- megachilidae[-which(is.na(megachilidae$species)), ]
 
-head(salticidae)
+head(megachilidae)
 ```
 
-    ##                  species decimalLongitude decimalLatitude
-    ## 1         Cyrba algerina         2.982293        43.12192
-    ## 2        Saitis barbipes         3.709085        43.74188
-    ## 3     Salticus mutabilis         3.863450        43.63991
-    ## 4 Pseudeuophrys erratica         2.483996        48.80000
-    ## 5      Philaeus chrysops         5.294425        43.90160
-    ## 6    Heliophanus cupreus         4.890985        45.52457
+    ## # A tibble: 6 x 3
+    ##   species       decimalLongitude decimalLatitude
+    ##   <chr>                    <dbl>           <dbl>
+    ## 1 Osmia cornuta            5.97             43.1
+    ## 2 Osmia rufa              -1.66             48.1
+    ## 3 Osmia cornuta            3.37             44.3
+    ## 4 Osmia cornuta           -0.876            46.6
+    ## 5 Osmia cornuta           -1.66             48.1
+    ## 6 Osmia cornuta            3.82             43.5
 
 So here we are, with a dataset composed of 6 342 occurence records from
 France. What we will do next consists in “rasterizing” these occurrence
@@ -980,24 +1052,24 @@ library(raster)
 france <- getData("GADM", country = "FRA", level = 1)
 
 rasterfrance <- raster(france,
-                  resolution = 0.5)
+                       resolution = 0.5)
 
 # Then, creaste the species stack through a loop in which all occurrences are
 # rasterized  
 sp.stack <- rasterfrance # This will be our species stack, it is empty at first
-for (sp in unique(salticidae$species))
+for (sp in unique(megachilidae$species))
 {
   sp.stack <- addLayer(sp.stack, # At each iteration, we will add a new species
-                       rasterize(salticidae[which(salticidae$species == sp), 
-                                           c("decimalLongitude",
-                                             "decimalLatitude")], 
-          # We select all occurrences corresponding to the current species
+                       rasterize(megachilidae[which(megachilidae$species == sp), 
+                                              c("decimalLongitude",
+                                                "decimalLatitude")], 
+                                 # We select all occurrences corresponding to the current species
                                  rasterfrance, fun = function (x, ...) 1
-          # This function will assign a "1" to a cell everytime one or more occurrences fall in this cell
+                                 # This function will assign a "1" to a cell everytime one or more occurrences fall in this cell
                        ))
 }
 # Add species names for all layers
-names(sp.stack) <- unique(salticidae$species)
+names(sp.stack) <- unique(megachilidae$species)
 
 # Plot the first species
 plot(sp.stack[[1]], col = "black")
@@ -1017,50 +1089,52 @@ then convert it into the bipartite `data.frame.`
 
 ``` r
 # Transform the species stack into a matrix
-salticidae.matrix <- rasterToPoints(sp.stack)
+megachilidae.matrix <- rasterToPoints(sp.stack)
 # Get cell numbers
-rownames(salticidae.matrix) <- cellFromXY(sp.stack,
-                                          salticidae.matrix[, c(1, 2)])
+rownames(megachilidae.matrix) <- cellFromXY(sp.stack,
+                                            megachilidae.matrix[, c(1, 2)])
 
 # Remove the x & y columns
-salticidae.matrix <- salticidae.matrix[, -c(1, 2)]
+megachilidae.matrix <- megachilidae.matrix[, -c(1, 2)]
 
 # Transform the matrix into a bipartite data.frame
-bipartite.salticidae <- reshape2::melt(salticidae.matrix)
+bipartite.megachilidae <- reshape2::melt(megachilidae.matrix)
 # Change column names
-colnames(bipartite.salticidae) <- c("Cell", "Species", "Occurrence")
+colnames(bipartite.megachilidae) <- c("Cell", "Species", "Occurrence")
 
 # Remove empty cells
-bipartite.salticidae <- bipartite.salticidae[-which(is.na(bipartite.salticidae$Occurrence)), ]
+bipartite.megachilidae <- bipartite.megachilidae[-which(is.na(bipartite.megachilidae$Occurrence)), ]
 ```
 
 ### Step 2 Write the network in Pajek format
 
 ``` r
-writePajek(bipartite.salticidae, 
+writePajek(bipartite.megachilidae, 
            site.field = "Cell", # Name of your site column
            species.field = "Species", # Name of your species column
-           filename = "salticidae.net", # Name of the output file
+           filename = "megachilidae.net", # Name of the output file
            abundance.field = NULL)
 ```
 
 ### Step 3 Run the Map Equation algorithm
 
 ``` r
-system("infomap --undirected --tree --map -N 100 salticidae.net ./")
+system("infomap --undirected --tree --map -N 100 megachilidae.net ./")
 ```
+
+    ## [1] 0
 
 ### Step 4 Read Map Equation clusters in R
 
 ``` r
-salticidae.clusters <- readInfomapTree("salticidae.tree",
-                                      network.summary = TRUE, # Prints a summary of the clustering results
-                                      replace.leaf.names = TRUE) # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
+megachilidae.clusters <- readInfomapTree("megachilidae.tree",
+                                         network.summary = TRUE, # Prints a summary of the clustering results
+                                         replace.leaf.names = TRUE) # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
 ```
 
     ## Biogeographical network with up to 2 levels of complexity.
-    ## lvl1: 15 clusters/leaf nodes
-    ## lvl2: 380 clusters/leaf nodes
+    ## lvl1: 22 clusters/leaf nodes
+    ## lvl2: 382 clusters/leaf nodes
 
 ### Step 5 Analysing the results in R
 
@@ -1068,44 +1142,51 @@ We will straight away analyse the results as the number of pixels per
 cluster:
 
 ``` r
-salticidae.cells <- getSiteTable(bipartite.salticidae, site.field = "Cell", 
-                                network = salticidae.clusters)
+megachilidae.cells <- getSiteTable(bipartite.megachilidae, site.field = "Cell", 
+                                   network = megachilidae.clusters)
 
-plyr::count(salticidae.cells$lvl1)
+plyr::count(megachilidae.cells$lvl1)
 ```
 
     ##     x freq
-    ## 1   1  173
-    ## 2   2   27
-    ## 3   3   18
-    ## 4   4   16
-    ## 5   5    3
-    ## 6   7    4
-    ## 7   8    4
-    ## 8  12    3
-    ## 9   6    2
-    ## 10 10    1
-    ## 11 11    2
-    ## 12  9    1
-    ## 13 13    1
-    ## 14 14    1
-    ## 15 15    1
+    ## 1   1   19
+    ## 2   3   77
+    ## 3   2   34
+    ## 4   4   23
+    ## 5   5    9
+    ## 6   6    5
+    ## 7   8    9
+    ## 8   7    5
+    ## 9  10    5
+    ## 10 15    5
+    ## 11  9    2
+    ## 12 12    2
+    ## 13 11    3
+    ## 14 16    1
+    ## 15 13    3
+    ## 16 14    2
+    ## 17 17    1
+    ## 18 18    3
+    ## 19 19    3
+    ## 20 20    1
+    ## 21 21    1
+    ## 22 22    1
 
-We seem to have at least one big cluster (173 cells), three small
-clusters (16 to 27 cells), and a large number of tiny clusters. This
-high number of tiny clusters may be due to the nature of the Map
-Equation algorithm: it tends to identify “transition” clusters
-(i.e. clusters with many shared species) as distinct clusters. Hence,
-these small clusters may indicate zones of biogeographical transition
-rather than biogeographical clusters. Therefore, we will colour them all
-in black for the time being.
+We seem to have at least one big cluster, two small clusters, and a
+large number of tiny clusters (\<10 cells). This high number of tiny
+clusters may be due to the nature of the Map Equation algorithm: it
+tends to identify “transition” clusters (i.e. clusters with many shared
+species) as distinct clusters. Hence, these small clusters may indicate
+zones of biogeographical transition rather than biogeographical
+clusters. Therefore, we will colour them all in black for the time
+being.
 
 ``` r
-salticidae.clusters <- attributeColors(salticidae.clusters, 
-                                      nb.max.colors = 4, # Four major clusters
-                                      palette = "Paired", 
-                                      other.color = "#000000", # Black colour
-                                      db = bipartite.salticidae)
+megachilidae.clusters <- attributeColors(megachilidae.clusters, 
+                                         nb.max.colors = 3, # Three major clusters
+                                         palette = "Paired", 
+                                         other.color = "#000000", # Black colour
+                                         db = bipartite.megachilidae)
 ```
 
 ### Step 6 Make raster maps\!
@@ -1117,9 +1198,9 @@ Let’s run `getSiteTable` again on our clusters, hence we will also have
 the colours on our data.frame of cells.
 
 ``` r
-salticidae.cells <- getSiteTable(bipartite.salticidae, site.field = "Cell", 
-                                network = salticidae.clusters)
-cols <- unique(salticidae.cells[, c("lvl1", "color")])
+megachilidae.cells <- getSiteTable(bipartite.megachilidae, site.field = "Cell", 
+                                   network = megachilidae.clusters)
+cols <- unique(megachilidae.cells[, c("lvl1", "color")])
 ```
 
 The data.frame called `cols` contains the cluster names and their
@@ -1133,21 +1214,28 @@ cols
 ```
 
     ##     lvl1   color ID
-    ## 19     1 #A6CEE3  1
-    ## 229    2 #1F78B4  2
-    ## 300    3 #B2DF8A  3
-    ## 320    4 #33A02C  4
-    ## 336    5 #000000  5
-    ## 346    6 #000000  9
-    ## 349    7 #000000  6
-    ## 357    8 #000000  7
-    ## 362    9 #000000 12
-    ## 366   10 #000000 10
-    ## 369   11 #000000 11
-    ## 372   12 #000000  8
-    ## 375   13 #000000 13
-    ## 378   14 #000000 14
-    ## 380   15 #000000 15
+    ## 1      1 #000000  1
+    ## 108    2 #1F78B4  3
+    ## 160    3 #A6CEE3  2
+    ## 240    4 #B2DF8A  4
+    ## 280    5 #000000  5
+    ## 293    6 #000000  6
+    ## 303    7 #000000  8
+    ## 311    8 #000000  7
+    ## 320    9 #000000 11
+    ## 329   10 #000000  9
+    ## 336   11 #000000 13
+    ## 339   12 #000000 12
+    ## 346   13 #000000 15
+    ## 351   14 #000000 16
+    ## 353   15 #000000 10
+    ## 360   16 #000000 14
+    ## 365   17 #000000 17
+    ## 369   18 #000000 18
+    ## 374   19 #000000 19
+    ## 378   20 #000000 20
+    ## 379   21 #000000 21
+    ## 382   22 #000000 22
 
 **Important**: When we apply `as.numeric` on the cluster column, it will
 return the positions of **factor levels**, which is why the numeric
@@ -1164,8 +1252,8 @@ Now, let’s create the raster that will map the clusters:
 # First we make an empty raster based on our species rasters
 rasternet <- raster(sp.stack, layer = 0)
 # Then we will add the values in our raster
-salticidae.cells$cellnumbers <- as.numeric(as.character(salticidae.cells$Name))
-rasternet[salticidae.cells$cellnumbers] <- as.numeric(salticidae.cells$lvl1)
+megachilidae.cells$cellnumbers <- as.numeric(as.character(megachilidae.cells$Name))
+rasternet[megachilidae.cells$cellnumbers] <- as.numeric(megachilidae.cells$lvl1)
 # Next, we transform the raster into a categorical raster
 rasternet <- ratify(rasternet)
 levels(rasternet)[[1]] <-  merge(levels(rasternet)[[1]], cols)
@@ -1184,67 +1272,170 @@ tm_shape(rasternet) +
 
 ![](Readme_files/figure-gfm/raster10-1.png)<!-- -->
 
-We indeed have multiple biogeographical regions of salticids in France\!
-Unsurprisingly, the two main clusters (in blue) correspond to mainland
-France versus Mediterranean France. Note the two dark blue pixels in
-Brittany (Western France). They may seem surprising, but I am pretty
-sure French arachnologists would not find them surprising. Indeed, this
-place has a warm microclimate, and species with warm niches are known to
-occur in this very place.
+We indeed have multiple biogeographical regions of megachilidae in
+France\! Unsurprisingly, the two main clusters (in blue) correspond to
+mainland France versus Mediterranean France. The green cluster is
+undoubtedly a mountaineous cluster.
 
-There are other clusters (in green) which seem to be at the boundary
-between these two main clusters, indicating that they may transition
-clusters. We would have to look at their participation coefficient to
-verify that\!
+Note that there are small occurrences of mediterranean & mountaineous
+clusters elsewhere in France. This is likely because of errors or
+problems with samplings, such as a very heterogeneous distribution of
+samplings across France.
+
+### Step 8.1 Participation Coefficient
 
 ``` r
 library(plyr)
-salticidae.clusters <- participationCoefficient(
-  network = salticidae.clusters, # Map Equation clustering results
-  db = bipartite.salticidae, # Database of step 1
+megachilidae.clusters <- participationCoefficient(
+  network = megachilidae.clusters, # Map Equation clustering results
+  db = bipartite.megachilidae, # Database of step 1
   site.field = "Cell", # Name of site column in your database
   species.field = "Species", # Name of species column in your database 
   lvl = "lvl1") 
 
 # Re-extract the cell table to get the participation coefficient column
-salticidae.cells <- getSiteTable(bipartite.salticidae, site.field = "Cell", 
-                                network = salticidae.clusters)
+megachilidae.cells <- getSiteTable(bipartite.megachilidae, site.field = "Cell", 
+                                   network = megachilidae.clusters)
 
 # Make an empty raster based on our species rasters
 rasterPC <- raster(sp.stack, layer = 0)
 # Then we will add the values in our raster
-salticidae.cells$cellnumbers <- as.numeric(as.character(salticidae.cells$Name))
-rasterPC[salticidae.cells$cellnumbers] <- salticidae.cells$participation.coef
+megachilidae.cells$cellnumbers <- as.numeric(as.character(megachilidae.cells$Name))
+rasterPC[megachilidae.cells$cellnumbers] <- megachilidae.cells$participation.coef
 
 # Make the PC map
 tm_shape(rasterPC) +
- tm_raster()
+  tm_raster()
 ```
 
 ![](Readme_files/figure-gfm/raster11-1.png)<!-- -->
 
 The interpretation of this map is more difficult since the participation
-coefficient is high in all clusters, except cluster number 1 .
+coefficient is high in all clusters, except cluster number 1.
 
 I can think of two main hypotheses to explain this pattern:
 
-1.  spider biogeographical regions have very diffuse limits (if you did
-    not know, spiders disperse by air via ballooning)
+1.  bee biogeographical regions have very diffuse limits
 
-2.  the data quality is poor (compared to other groups, the quality of
-    spider distribution data in France is currently very poor), thus
-    most pixels have incomplete species lists. When species lists are
-    incomplete, usually the documented species are the most
-    common/widespread species, which occur everywhere regardless of
-    region boundaries. Hence, the absence of information on rarest taxa
-    results in inflated participation coefficient values.
+2.  the data quality is poor, thus most pixels have incomplete species
+    lists. When species lists are incomplete, usually the documented
+    species are the most common/widespread species, which occur
+    everywhere regardless of region boundaries. Hence, the absence of
+    information on rarest taxa results in inflated participation
+    coefficient values.
 
-Therefore, my last piece of advice to you is to remember to not go too
+Therefore, my best piece of advice to you is to remember to not go too
 far in your interpretations, because this analysis will only provide
 information within the limits of your occurrence data. In our example
 here, we are working on very sparse and spatially heterogeneous data -
-yet, it gives clues about potential bioregions for salticid spiders in
-Frane.
+yet, it gives clues about potential bioregions for megachilidae in
+France.
+
+### Step 8.2 IndVal, DilVal and robustness
+
+Description to be added here in the future
+
+``` r
+raster.area <- data.frame(name = 1:ncell(rasternet),
+                          area = getValues(area(rasternet)))
+
+lvl1metrics <- clusterMetrics(db = bipartite.megachilidae, # Database of step 1
+                              network = megachilidae.clusters, # Clustering results
+                              site.field = "Cell", # Name of site column in your database
+                              species.field = "Species", # Name of species column in your database
+                              site.area = raster.area, # A data.frame containing at least two columns with site name ("name") and site surface ("surface")
+                              level = "lvl1") # Clustering evel at which we calculate metrics
+```
+
+#### Species-level metrics
+
+``` r
+# First, order the species metrics by decreasing IndVal values
+lvl1metrics$species.stats <- lvl1metrics$species.stats[
+  order(lvl1metrics$species.stats$IndVal, decreasing = TRUE), ]
+
+# Then, look at the table
+head(lvl1metrics$species.stats)
+```
+
+    ##                                             species cluster Occ.Ri Occ.Di
+    ## Coelioxys.acanthura             Coelioxys.acanthura      16      1      1
+    ## Anthidiellum.breviusculum Anthidiellum.breviusculum      17      1      1
+    ## Megachile.fertoni                 Megachile.fertoni      16      1      1
+    ## Osmia.villosa                         Osmia.villosa      21      1      1
+    ## Probombus.hirsutus               Probombus.hirsutus      22      1      1
+    ## Megachile.sicula                   Megachile.sicula      15      4      4
+    ##                           Occ.Ai Occ.Fi Occ.IndVal Occ.DilVal       Ri       Di
+    ## Coelioxys.acanthura          1.0      1        1.0          0 2223.155 2223.155
+    ## Anthidiellum.breviusculum    1.0      1        1.0          0 2223.155 2223.155
+    ## Megachile.fertoni            1.0      1        1.0          0 2223.155 2223.155
+    ## Osmia.villosa                1.0      1        1.0          0 2128.229 2128.229
+    ## Probombus.hirsutus           1.0      1        1.0          0 2128.229 2128.229
+    ## Megachile.sicula             0.8      1        0.8          0 8903.360 8903.360
+    ##                                  Ai Fi    IndVal DilVal
+    ## Coelioxys.acanthura       1.0000000  1 1.0000000      0
+    ## Anthidiellum.breviusculum 1.0000000  1 1.0000000      0
+    ## Megachile.fertoni         1.0000000  1 1.0000000      0
+    ## Osmia.villosa             1.0000000  1 1.0000000      0
+    ## Probombus.hirsutus        1.0000000  1 1.0000000      0
+    ## Megachile.sicula          0.7937251  1 0.7937251      0
+
+Tiny clusters tend to always be first in this table, because they are
+often composed of only one species occurring only in the cluster,
+therefore with a high IndVal.
+
+Let’s focus on big clusters only:
+
+``` r
+head(lvl1metrics$species.stats[which(lvl1metrics$species.stats$cluster %in% 1:3), ])
+```
+
+    ##                                         species cluster Occ.Ri Occ.Di    Occ.Ai
+    ## Megachile.pyrenaea           Megachile.pyrenaea       1      8      8 0.4210526
+    ## Megachile.circumcincta   Megachile.circumcincta       1      8      9 0.4210526
+    ## Osmia.cornuta                     Osmia.cornuta       3     54    104 0.7012987
+    ## Megachile.pyrenaica         Megachile.pyrenaica       1      8     10 0.4210526
+    ## Osmia.andrenoides             Osmia.andrenoides       1      7      8 0.3684211
+    ## Chelostoma.campanularum Chelostoma.campanularum       1      7      8 0.3684211
+    ##                            Occ.Fi Occ.IndVal Occ.DilVal        Ri        Di
+    ## Megachile.pyrenaea      1.0000000  0.4210526 0.00000000  17538.41  17538.41
+    ## Megachile.circumcincta  0.8888889  0.3742690 0.04678363  17241.39  19427.07
+    ## Osmia.cornuta           0.5192308  0.3641359 0.33716284 113023.23 220545.08
+    ## Megachile.pyrenaica     0.8000000  0.3368421 0.08421053  17558.76  21948.95
+    ## Osmia.andrenoides       0.8750000  0.3223684 0.04605263  15487.14  17691.65
+    ## Chelostoma.campanularum 0.8750000  0.3223684 0.04605263  15446.65  17669.80
+    ##                                Ai        Fi    IndVal     DilVal
+    ## Megachile.pyrenaea      0.4285332 1.0000000 0.4285332 0.00000000
+    ## Megachile.circumcincta  0.4212758 0.8874928 0.3738792 0.04739655
+    ## Osmia.cornuta           0.7023606 0.5124722 0.3599403 0.34242031
+    ## Megachile.pyrenaica     0.4290305 0.7999818 0.3432166 0.08581391
+    ## Osmia.andrenoides       0.3784126 0.8753929 0.3312597 0.04715289
+    ## Chelostoma.campanularum 0.3774231 0.8741834 0.3299370 0.04748610
+
+After consulting my friend Benoît Geslin who is a bee expert, the
+results make sense. The mediterranean cluster is driven by an introduced
+species which has currently only spread in this part of France. The
+mountaineous cluster are d riven by mountain species, whereas the
+cluster covering most of France is driven by widespread species in
+France.
+
+#### Site-level metrics
+
+``` r
+# Make an empty raster based on our species rasters
+rasterRg <- raster(sp.stack, layer = 0)
+# Then we will add the Relative Robustness values in our raster
+lvl1metrics$site.stats$cellnumbers <- as.numeric(as.character(lvl1metrics$site.stats$site))
+rasterRg[lvl1metrics$site.stats$cellnumbers] <- lvl1metrics$site.stats$RRg
+
+# Make the PC map
+tm_shape(rasterRg) +
+  tm_raster()
+```
+
+    ## Variable "layer" contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.
+
+![](Readme_files/figure-gfm/metrics5-1.png)<!-- -->
 
 # Credits
 

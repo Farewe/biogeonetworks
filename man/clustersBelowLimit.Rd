@@ -4,7 +4,14 @@
 \alias{clustersBelowLimit}
 \title{Identify clusters that do not have a minimum number of nodes}
 \usage{
-clustersBelowLimit(df, column, limit, remove.clusters = FALSE)
+clustersBelowLimit(
+  df,
+  column,
+  limit,
+  rename = FALSE,
+  new.col.name = paste0("renamed.", column),
+  remove.clusters = FALSE
+)
 }
 \arguments{
 \item{df}{the network data.frame, usually issued from
@@ -16,9 +23,12 @@ clustersBelowLimit(df, column, limit, remove.clusters = FALSE)
 clusters above the limit from below the limit. Clusters must have a number of
 nodes strictly superior to \code{limit} to be above.}
 
+\item{rename}{\code{TRUE} or \code{FALSE}. If \code{TRUE}, then
+the function will return a data.frame where clusters below \code{limit} have 
+been renamed to "small.clusters"}
+
 \item{remove.clusters}{\code{TRUE} or \code{FALSE}. If \code{TRUE}, then
-the function will return a data.frame without clusters below \code{limit}
-\code{\link{readInfomapTree}}}
+the function will return a data.frame without clusters below \code{limit}}
 }
 \value{
 If \code{remove.clusters = TRUE}, a subset of \code{df} will be
@@ -29,7 +39,6 @@ This function identifies clusters that do not have a specified minimum number
 of nodes, and can optionally remove them from the network data.frame.
 }
 \examples{
-
 
 
 }

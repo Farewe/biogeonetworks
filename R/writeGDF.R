@@ -25,7 +25,6 @@
 #' Boris Leroy \email{leroy.boris@@gmail.com}
 #' @examples
 #'
-#' @export
 writeGDF <- function(db, network = NULL, site.field = colnames(db)[1],
                      species.field = colnames(db)[2],
                      filename, color.field = NULL, abundance.field = NULL,

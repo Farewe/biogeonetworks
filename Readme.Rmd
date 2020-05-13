@@ -188,8 +188,8 @@ may differ for other datasets.
 * `--tree`: output file format ".tree". We will use this format in step 4.
 
 * `--map`: output file format ".map". Useful if you want to [use the apps on 
- the Map Equation website](https://www.mapequation.org/apps.html), as these are reading .map file formats.
- 
+the Map Equation website](https://www.mapequation.org/apps.html), as these are reading .map file formats.
+
 After the parameters are set, you specify the input file (Pajek file generated at
 step 2), and then the output folder.
 
@@ -198,7 +198,7 @@ as paths are not written the same as in windows.*
 
 
 ``` {r mapequation, eval = TRUE, cache = TRUE, echo = TRUE, results = "hide"}
-system("infomap --undirected --tree --map -N 1000 fish.net ./")
+system("infomap --undirected --tree --map -N 100 fish.net ./")
 ```
 
 Infomap is very talkative and your console is now filled with information and 
@@ -235,8 +235,8 @@ We read the "fish.tree" file in R with the function `readInfomapTree()`.
 
 ```{r readinfomaptree, cache = TRUE}
 fish.clusters <- readInfomapTree("fish.tree",
-      network.summary = TRUE, # Prints a summary of the clustering results
-      replace.leaf.names = TRUE) # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
+                                 network.summary = TRUE, # Prints a summary of the clustering results
+                                 replace.leaf.names = TRUE) # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
 ```
 
 Let's inspect the generated object:
@@ -315,8 +315,8 @@ First, let's make a table composed only of site nodes:
 
 ```{r analysis3, cache=TRUE}
 fish.sites <- getSiteTable(fish, # Your bipartite data.frame of STEP 1
-   site.field = "X1.Basin.Name", # Name of your site column
-   network = fish.clusters) # Output table from Map Equation
+                           site.field = "X1.Basin.Name", # Name of your site column
+                           network = fish.clusters) # Output table from Map Equation
 
 plyr::count(fish.sites$lvl1)
 ```
@@ -328,8 +328,8 @@ here.
 Let's look at the species table now:
 ```{r analysis4, cache=TRUE}
 fish.species <- getSpeciesTable(fish, # Your bipartite data.frame of STEP 1
-   species.field = "X6.Fishbase.Valid.Species.Name", # Name of your species column
-   network = fish.clusters) # Output table from Map Equation
+                                species.field = "X6.Fishbase.Valid.Species.Name", # Name of your species column
+                                network = fish.clusters) # Output table from Map Equation
 
 plyr::count(fish.species$lvl1)
 ```
@@ -374,14 +374,14 @@ assign the result of the function to this same `data.frame`.
 
 ```{r color1, cache=TRUE}
 fish.clusters <- attributeColors(network = fish.clusters, # Same object as input & output
-    lvl = "lvl1", # Which hierarchical level are we working on?
-    nb.max.colors = 2, # We chose two clusters as significant for level 1
-    colname = "colors.lvl1", # Name to give to the colour column
-    other.color = "black", # Minor clusters will be black
-    cluster.order = "sites", # Cluster order for colours (see below)
-    db = fish, # Database of step 1
-    site.field = "X1.Basin.Name", # Name of site column in your database
-    species.field = "X6.Fishbase.Valid.Species.Name") # Name of species column in your database
+                                 lvl = "lvl1", # Which hierarchical level are we working on?
+                                 nb.max.colors = 2, # We chose two clusters as significant for level 1
+                                 colname = "colors.lvl1", # Name to give to the colour column
+                                 other.color = grey(0.5), # Minor clusters will be black
+                                 cluster.order = "sites", # Cluster order for colours (see below)
+                                 db = fish, # Database of step 1
+                                 site.field = "X1.Basin.Name", # Name of site column in your database
+                                 species.field = "X6.Fishbase.Valid.Species.Name") # Name of species column in your database
 head(fish.clusters)
 ```
 
@@ -414,14 +414,14 @@ Before we proceed with the maps, let's also add a colour column for the level 2
 of our analyses:
 ```{r color2, cache=TRUE}
 fish.clusters <- attributeColors(network = fish.clusters, # Same object as input & output
-    lvl = "lvl2", # Which hierarchical level are we working on?
-    nb.max.colors = 6, # We chose two clusters as significant for level 2
-    colname = "colors.lvl2", # Name to give to the colour column
-    other.color = "black", # Minor clusters will be black
-    cluster.order = "sites", # Cluster order for colours (see below)
-    db = fish, # Database of step 1
-    site.field = "X1.Basin.Name", # Name of site column in your database
-    species.field = "X6.Fishbase.Valid.Species.Name") # Name of species column in your database
+                                 lvl = "lvl2", # Which hierarchical level are we working on?
+                                 nb.max.colors = 6, # We chose two clusters as significant for level 2
+                                 colname = "colors.lvl2", # Name to give to the colour column
+                                 other.color = "black", # Minor clusters will be black
+                                 cluster.order = "sites", # Cluster order for colours (see below)
+                                 db = fish, # Database of step 1
+                                 site.field = "X1.Basin.Name", # Name of site column in your database
+                                 species.field = "X6.Fishbase.Valid.Species.Name") # Name of species column in your database
 head(fish.clusters)
 ```
 
@@ -500,11 +500,11 @@ this column.
 
 ```{r gdf, cache=TRUE}
 writeGDF(db = fish, # Database of step 1
-    site.field = "X1.Basin.Name", # Name of site column in your database
-    species.field = "X6.Fishbase.Valid.Species.Name", # Name of species column in your database
-    network = fish.clusters, 
-    filename = "fish.gdf",
-    color.field = "colors.lvl2") # Name of the color field in the network
+         site.field = "X1.Basin.Name", # Name of site column in your database
+         species.field = "X6.Fishbase.Valid.Species.Name", # Name of species column in your database
+         network = fish.clusters, 
+         filename = "fish.gdf",
+         color.field = "colors.lvl2") # Name of the color field in the network
 
 ```
 
@@ -525,7 +525,9 @@ I highly recommend you to learn to explore networks as they are very useful to
 understand patterns or discover errors in your datasets (e.g., strange links
 between regions may indicate records of introduced species!).
 
-## Calculation of the Participation Coefficient
+## Step 8 Calculation of metrics for the network
+
+### 8.1 The Participation Coefficient
 
 The Participation Coefficient, introduced by [Bloomfield et al. 2018](https://onlinelibrary.wiley.com/doi/full/10.1111/ecog.02596),
 provides an indication of the degree to which a node is sharing links with nodes
@@ -565,13 +567,34 @@ basins@data$PC <- fish.clusters$participation.coef[match(
 library(tmap)
 
 tm_shape(basins, projection = "robin") + # Make a nice projection as well!
- tm_polygons("PC") +
- tm_layout(legend.position = c("left", "bottom"))
+  tm_polygons("PC") +
+  tm_layout(legend.position = c("left", "bottom"))
 ```
 
 And here is the transition zones maps! In case you wonder, the differences
 between the results here and those in our paper correspond to the *post-hoc*
 changes we made to the minor clusters (see Appendix S5).
+
+### 8.2 Another set of metrics: IndVal, DilVal and robustness
+
+Description to be added here in the future
+
+```{r metrics, cache=TRUE}
+site.area <- data.frame(name = basins$BasinName,
+                        area = basins$Surf_area)
+
+lvl1metrics <- clusterMetrics(db = fish, # Database of step 1
+                              network = fish.clusters, # Clustering results
+                              site.field = "X1.Basin.Name", # Name of site column in your database
+                              species.field = "X6.Fishbase.Valid.Species.Name", # Name of species column in your database
+                              site.area = site.area, # A data.frame containing at least two columns with site name ("name") and site surface ("surface")
+                              level = "lvl1") # Clustering evel at which we calculate metrics
+
+head(lvl1metrics$region.stats)
+head(lvl1metrics$species.stats)
+head(lvl1metrics$site.stats)
+```
+
 
 
 # Biogeographical networks, a second example with raster maps
@@ -593,29 +616,28 @@ install.packages(c("rgbif", "reshape2"))
 
 ### Get occurrence data points and transform them into rasters
 
-I will use the package rgbif to download spider occurrence data in France, for
-the family Salticidae. I chose jumping spiders (Salticidae) because I know they
-are particularly sensitive to climatic conditions and I have always heard my 
-arachnologist colleagues says that jumping spiders of southern France are much
-different from jumping spiders of the rest of France. Therefore, I expect to see 
-at least two clusters, one for the mediterranean part of France, and another for
-the rest of France.
+I will use the package rgbif to download occurrence data in France, for
+the bee family megachilidae (they are funny large bees). I chose them because
+they have enough data in France to be able to look for bioregions, and
+I have a friend working on them. 
+
+**Warning: the rgbif package takes a while to proceed**
 
 ```{r gbif1, cache=TRUE}
 library(rgbif)
-salticidae <- occ_search(scientificName = "Salticidae", country = "FR",
-                hasCoordinate = TRUE,
-                limit = 20000,
-                return = "data")
+megachilidae <- occ_search(scientificName = "Megachilidae", country = "FR",
+                           hasCoordinate = TRUE,
+                           limit = 20000,
+                           return = "data")
 
 ## A quick cleaning of the data
 # We keep only the important columns here (remember you will have to cite data
 # sources if you do this for a publication!)
-salticidae <- salticidae[, c("species", "decimalLongitude", "decimalLatitude")]
+megachilidae <- megachilidae[, c("species", "decimalLongitude", "decimalLatitude")]
 # Remove data with no valid species name
-salticidae <- salticidae[-which(is.na(salticidae$species)), ]
+megachilidae <- megachilidae[-which(is.na(megachilidae$species)), ]
 
-head(salticidae)
+head(megachilidae)
 ```
 
 So here we are, with a dataset composed of 6 342 occurence records from France.
@@ -633,24 +655,24 @@ library(raster)
 france <- getData("GADM", country = "FRA", level = 1)
 
 rasterfrance <- raster(france,
-                  resolution = 0.5)
+                       resolution = 0.5)
 
 # Then, creaste the species stack through a loop in which all occurrences are
 # rasterized  
 sp.stack <- rasterfrance # This will be our species stack, it is empty at first
-for (sp in unique(salticidae$species))
+for (sp in unique(megachilidae$species))
 {
   sp.stack <- addLayer(sp.stack, # At each iteration, we will add a new species
-                       rasterize(salticidae[which(salticidae$species == sp), 
-                                           c("decimalLongitude",
-                                             "decimalLatitude")], 
-          # We select all occurrences corresponding to the current species
+                       rasterize(megachilidae[which(megachilidae$species == sp), 
+                                              c("decimalLongitude",
+                                                "decimalLatitude")], 
+                                 # We select all occurrences corresponding to the current species
                                  rasterfrance, fun = function (x, ...) 1
-          # This function will assign a "1" to a cell everytime one or more occurrences fall in this cell
+                                 # This function will assign a "1" to a cell everytime one or more occurrences fall in this cell
                        ))
 }
 # Add species names for all layers
-names(sp.stack) <- unique(salticidae$species)
+names(sp.stack) <- unique(megachilidae$species)
 
 # Plot the first species
 plot(sp.stack[[1]], col = "black")
@@ -668,57 +690,57 @@ convert it into the bipartite `data.frame.`
 
 ```{r raster1, cache=TRUE}
 # Transform the species stack into a matrix
-salticidae.matrix <- rasterToPoints(sp.stack)
+megachilidae.matrix <- rasterToPoints(sp.stack)
 # Get cell numbers
-rownames(salticidae.matrix) <- cellFromXY(sp.stack,
-                                          salticidae.matrix[, c(1, 2)])
+rownames(megachilidae.matrix) <- cellFromXY(sp.stack,
+                                            megachilidae.matrix[, c(1, 2)])
 
 # Remove the x & y columns
-salticidae.matrix <- salticidae.matrix[, -c(1, 2)]
+megachilidae.matrix <- megachilidae.matrix[, -c(1, 2)]
 
 # Transform the matrix into a bipartite data.frame
-bipartite.salticidae <- reshape2::melt(salticidae.matrix)
+bipartite.megachilidae <- reshape2::melt(megachilidae.matrix)
 # Change column names
-colnames(bipartite.salticidae) <- c("Cell", "Species", "Occurrence")
+colnames(bipartite.megachilidae) <- c("Cell", "Species", "Occurrence")
 
 # Remove empty cells
-bipartite.salticidae <- bipartite.salticidae[-which(is.na(bipartite.salticidae$Occurrence)), ]
+bipartite.megachilidae <- bipartite.megachilidae[-which(is.na(bipartite.megachilidae$Occurrence)), ]
 
 ```
 
 ### Step 2 Write the network in Pajek format
 ```{r raster2, cache=TRUE}
-writePajek(bipartite.salticidae, 
+writePajek(bipartite.megachilidae, 
            site.field = "Cell", # Name of your site column
            species.field = "Species", # Name of your species column
-           filename = "salticidae.net", # Name of the output file
+           filename = "megachilidae.net", # Name of the output file
            abundance.field = NULL)
 ```
 
 ### Step 3 Run the Map Equation algorithm
 ```{r raster3, cache=TRUE}
-system("infomap --undirected --tree --map -N 100 salticidae.net ./")
+system("infomap --undirected --tree --map -N 100 megachilidae.net ./")
 ```
 
 ### Step 4 Read Map Equation clusters in R
 ```{r raster4, cache=TRUE}
-salticidae.clusters <- readInfomapTree("salticidae.tree",
-                                      network.summary = TRUE, # Prints a summary of the clustering results
-                                      replace.leaf.names = TRUE) # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
+megachilidae.clusters <- readInfomapTree("megachilidae.tree",
+                                         network.summary = TRUE, # Prints a summary of the clustering results
+                                         replace.leaf.names = TRUE) # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
 ```
 
 ### Step 5 Analysing the results in R
 
 We will straight away analyse the results as the number of pixels per cluster:
 ```{r raster5, cache=TRUE}
-salticidae.cells <- getSiteTable(bipartite.salticidae, site.field = "Cell", 
-                                network = salticidae.clusters)
+megachilidae.cells <- getSiteTable(bipartite.megachilidae, site.field = "Cell", 
+                                   network = megachilidae.clusters)
 
-plyr::count(salticidae.cells$lvl1)
+plyr::count(megachilidae.cells$lvl1)
 ```
 
-We seem to have at least one big cluster (173 cells), three small clusters
-(16 to 27 cells), and a large number of tiny clusters. This high number of tiny
+We seem to have at least one big cluster, two small clusters, and a large number
+of tiny clusters (<10 cells). This high number of tiny
 clusters may be due to the nature of the Map Equation algorithm: it tends to 
 identify "transition" clusters (i.e. clusters with many shared species) as 
 distinct clusters. Hence, these small clusters may indicate zones of
@@ -726,11 +748,11 @@ biogeographical transition rather than biogeographical clusters. Therefore, we
 will colour them all in black for the time being.
 
 ```{r raster6, cache=TRUE}
-salticidae.clusters <- attributeColors(salticidae.clusters, 
-                                      nb.max.colors = 4, # Four major clusters
-                                      palette = "Paired", 
-                                      other.color = "#000000", # Black colour
-                                      db = bipartite.salticidae)
+megachilidae.clusters <- attributeColors(megachilidae.clusters, 
+                                         nb.max.colors = 3, # Three major clusters
+                                         palette = "Paired", 
+                                         other.color = "#000000", # Black colour
+                                         db = bipartite.megachilidae)
 ```
 
 ### Step 6 Make raster maps!
@@ -742,9 +764,9 @@ Let's run `getSiteTable` again on our clusters, hence we will also have the
 colours on our data.frame of cells.
 
 ```{r raster7, cache=TRUE}
-salticidae.cells <- getSiteTable(bipartite.salticidae, site.field = "Cell", 
-                                network = salticidae.clusters)
-cols <- unique(salticidae.cells[, c("lvl1", "color")])
+megachilidae.cells <- getSiteTable(bipartite.megachilidae, site.field = "Cell", 
+                                   network = megachilidae.clusters)
+cols <- unique(megachilidae.cells[, c("lvl1", "color")])
 ```
 
 The data.frame called `cols` contains the cluster names and their associated 
@@ -771,8 +793,8 @@ Now, let's create the raster that will map the clusters:
 # First we make an empty raster based on our species rasters
 rasternet <- raster(sp.stack, layer = 0)
 # Then we will add the values in our raster
-salticidae.cells$cellnumbers <- as.numeric(as.character(salticidae.cells$Name))
-rasternet[salticidae.cells$cellnumbers] <- as.numeric(salticidae.cells$lvl1)
+megachilidae.cells$cellnumbers <- as.numeric(as.character(megachilidae.cells$Name))
+rasternet[megachilidae.cells$cellnumbers] <- as.numeric(megachilidae.cells$lvl1)
 # Next, we transform the raster into a categorical raster
 rasternet <- ratify(rasternet)
 levels(rasternet)[[1]] <-  merge(levels(rasternet)[[1]], cols)
@@ -789,62 +811,121 @@ tm_shape(rasternet) +
 
 ```
 
-We indeed have multiple biogeographical regions of salticids in France! 
+We indeed have multiple biogeographical regions of megachilidae in France! 
 Unsurprisingly, the two main clusters (in blue) correspond to mainland France 
-versus Mediterranean France. Note the two dark blue pixels in Brittany (Western
-France). They may seem surprising, but I am pretty sure French arachnologists
-would not find them surprising. Indeed, this place has a warm microclimate, and
-species with warm niches are known to occur in this very place. 
+versus Mediterranean France. The green cluster is undoubtedly a mountaineous 
+cluster.
 
-There are other clusters (in green) which seem to be at the boundary between
-these two main clusters, indicating that they may transition clusters. We would
-have to look at their participation coefficient to verify that! 
+Note that there are small occurrences of mediterranean & mountaineous clusters
+elsewhere in France. This is likely because of errors or problems with samplings,
+such as a very heterogeneous distribution of samplings across France. 
 
+
+
+### Step 8.1 Participation Coefficient
 
 ```{r raster11, cache=TRUE}
 library(plyr)
-salticidae.clusters <- participationCoefficient(
-  network = salticidae.clusters, # Map Equation clustering results
-  db = bipartite.salticidae, # Database of step 1
+megachilidae.clusters <- participationCoefficient(
+  network = megachilidae.clusters, # Map Equation clustering results
+  db = bipartite.megachilidae, # Database of step 1
   site.field = "Cell", # Name of site column in your database
   species.field = "Species", # Name of species column in your database 
   lvl = "lvl1") 
 
 # Re-extract the cell table to get the participation coefficient column
-salticidae.cells <- getSiteTable(bipartite.salticidae, site.field = "Cell", 
-                                network = salticidae.clusters)
+megachilidae.cells <- getSiteTable(bipartite.megachilidae, site.field = "Cell", 
+                                   network = megachilidae.clusters)
 
 # Make an empty raster based on our species rasters
 rasterPC <- raster(sp.stack, layer = 0)
 # Then we will add the values in our raster
-salticidae.cells$cellnumbers <- as.numeric(as.character(salticidae.cells$Name))
-rasterPC[salticidae.cells$cellnumbers] <- salticidae.cells$participation.coef
+megachilidae.cells$cellnumbers <- as.numeric(as.character(megachilidae.cells$Name))
+rasterPC[megachilidae.cells$cellnumbers] <- megachilidae.cells$participation.coef
 
 # Make the PC map
 tm_shape(rasterPC) +
- tm_raster()
+  tm_raster()
 ```
 
 The interpretation of this map is more difficult since the 
-participation coefficient is high in all clusters, except cluster number 1 .
+participation coefficient is high in all clusters, except cluster number 1.
 
 I can think of two main hypotheses to explain this pattern:
 
-1. spider biogeographical regions have very diffuse limits (if you did not know, spiders disperse by air
-via ballooning)
+1. bee biogeographical regions have very diffuse limits 
 
-2. the data quality is poor (compared to other groups, the 
-quality of spider distribution data in France is currently very poor), thus most
+2. the data quality is poor, thus most
 pixels have incomplete species lists. When species lists are incomplete, usually
 the documented species are the most common/widespread species, which occur 
 everywhere regardless of region boundaries. Hence, the absence of information on
 rarest taxa results in inflated participation coefficient values.
 
-Therefore, my last piece of advice to you is to remember to not go too far in
+Therefore, my best piece of advice to you is to remember to not go too far in
 your interpretations, because this analysis will only provide information within
 the limits of your occurrence data. In our example here, we are working on very 
 sparse and spatially heterogeneous data - yet, it gives clues about potential 
-bioregions for salticid spiders in Frane.
+bioregions for megachilidae in France.
+
+### Step 8.2 IndVal, DilVal and robustness
+
+Description to be added here in the future
+
+```{r metrics2, cache=TRUE}
+raster.area <- data.frame(name = 1:ncell(rasternet),
+                          area = getValues(area(rasternet)))
+
+lvl1metrics <- clusterMetrics(db = bipartite.megachilidae, # Database of step 1
+                              network = megachilidae.clusters, # Clustering results
+                              site.field = "Cell", # Name of site column in your database
+                              species.field = "Species", # Name of species column in your database
+                              site.area = raster.area, # A data.frame containing at least two columns with site name ("name") and site surface ("surface")
+                              level = "lvl1") # Clustering evel at which we calculate metrics
+
+```
+
+#### Species-level metrics
+
+```{r metrics3, cache=TRUE}
+# First, order the species metrics by decreasing IndVal values
+lvl1metrics$species.stats <- lvl1metrics$species.stats[
+  order(lvl1metrics$species.stats$IndVal, decreasing = TRUE), ]
+
+# Then, look at the table
+head(lvl1metrics$species.stats)
+```
+
+Tiny clusters tend to always be first in this table, because they are often 
+composed of only one species occurring only in the cluster, therefore with a
+high IndVal.
+
+Let's focus on big clusters only:
+```{r metrics4, cache=TRUE}
+head(lvl1metrics$species.stats[which(lvl1metrics$species.stats$cluster %in% 1:3), ])
+```
+
+After consulting my friend Benoît Geslin who is a bee expert, the results make
+sense. The mediterranean cluster is driven by an introduced species which has 
+currently only spread in this part of France. The mountaineous cluster are d
+riven by mountain species, whereas the cluster covering most of France is driven
+by widespread species in France. 
+
+
+#### Site-level metrics
+
+```{r metrics5, cache=TRUE}
+# Make an empty raster based on our species rasters
+rasterRg <- raster(sp.stack, layer = 0)
+# Then we will add the Relative Robustness values in our raster
+lvl1metrics$site.stats$cellnumbers <- as.numeric(as.character(lvl1metrics$site.stats$site))
+rasterRg[lvl1metrics$site.stats$cellnumbers] <- lvl1metrics$site.stats$RRg
+
+# Make the PC map
+tm_shape(rasterRg) +
+  tm_raster()
+```
+
+
 
 
 # Credits

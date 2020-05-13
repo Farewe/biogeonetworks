@@ -22,8 +22,7 @@
 #' @examples
 #'
 #'
-#'
-#' @export
+
 clustersBelowLimit <- function(df, column, limit, rename = FALSE, new.col.name = paste0("renamed.", column), remove.clusters = FALSE)
 {
   clustersbelowlimit <- which(sapply(levels(df[, column]),

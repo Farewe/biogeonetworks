@@ -4,8 +4,13 @@
 \alias{writePajek}
 \title{Write a biogeographical network in Pajek format}
 \usage{
-writePajek(db, site.field = 1, species.field = 2, filename,
-  abundance.field = NULL)
+writePajek(
+  db,
+  site.field = 1,
+  species.field = 2,
+  filename,
+  abundance.field = NULL
+)
 }
 \arguments{
 \item{db}{a data.frame with at least two columns, site and species. An

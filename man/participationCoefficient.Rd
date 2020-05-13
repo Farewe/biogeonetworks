@@ -4,8 +4,7 @@
 \alias{participationCoefficient}
 \title{Calculates the Participation Coefficient of nodes in a network}
 \usage{
-participationCoefficient(network, db, site.field, species.field,
-  lvl = "lvl1")
+participationCoefficient(network, db, site.field, species.field, lvl = "lvl1")
 }
 \arguments{
 \item{network}{the network data.frame, usually issued from

@@ -4,10 +4,19 @@
 \alias{attributeColors}
 \title{Attribute colors to network clusters}
 \usage{
-attributeColors(network, nb.max.colors = 12, palette = "Paired",
-  lvl = "lvl1", colname = "color", sh.grey = FALSE,
-  other.color = grey(0.5), cluster.order = "sites", db,
-  site.field = 1, species.field = 2)
+attributeColors(
+  network,
+  nb.max.colors = 12,
+  palette = "Paired",
+  lvl = "lvl1",
+  colname = "color",
+  sh.grey = FALSE,
+  other.color = grey(0.5),
+  cluster.order = "sites",
+  db,
+  site.field = 1,
+  species.field = 2
+)
 }
 \arguments{
 \item{network}{the network data.frame, usually issued from
