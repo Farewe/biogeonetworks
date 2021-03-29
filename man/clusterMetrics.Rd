@@ -10,7 +10,8 @@ clusterMetrics(
   site.field = colnames(db)[1],
   species.field = colnames(db)[2],
   site.area = NULL,
-  level = "lvl1"
+  level = "lvl1",
+  ...
 )
 }
 \arguments{
