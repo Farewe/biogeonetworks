@@ -39,6 +39,10 @@ writePajek <- function(db, site.field = 1, species.field = 2, filename, abundanc
   {
     db[, site.field] <- as.factor(db[, site.field])
   }
+  if(any(duplicated(db[, c(species.field, site.field)])))
+  {
+    warning("There are duplicated lines in your site-species database. Check that this is expected behaviour.")
+  }
 
   species <- data.frame(sp = levels(db[, species.field]),
                         id = 1:length(levels(db[, species.field])))
