@@ -9,6 +9,11 @@
 #' @param replace.leaf.names \code{TRUE} or {FALSE}. Do you want to replace
 #' leaf names with the names of sites and species? The procedure takes a little
 #' longer on large databases
+#' @param db a data.frame with at least two columns, site and species. Specify
+#' this argument to add a column called \code{nodetype} which indicates the
+#' nature of each node in the network (site or species)
+#' @param site.field name or number of site column in \code{db}
+#' @param species.field name or number of species column in \code{db}
 #' @return A data.frame
 #' @export
 #' @author
@@ -19,7 +24,10 @@
 #'
 #' @export
 readInfomapTree <- function(file, network.summary = TRUE,
-                            replace.leaf.names = TRUE)
+                            replace.leaf.names = TRUE,
+                            db = NULL,
+                            site.field = colnames(db)[1],
+                            species.field = colnames(db)[2])
 {
   tree.infomap <- read.table(file, skip = 1, sep = " ", nrows = -1)
   colnames(tree.infomap) <- c("Groups", "Codelength", "Name", "id")
@@ -79,10 +87,18 @@ readInfomapTree <- function(file, network.summary = TRUE,
     }
   }
   
+  
   tree.infomap[, grep("lvl", colnames(tree.infomap))] <-  
     lapply(tree.infomap[, grep("lvl", colnames(tree.infomap))], 
            function(x) factor(x, levels = 
                                 levels(x)[order(table(x), decreasing = TRUE)]))
+  
+  if(!is.null(db))
+  {
+    tree.infomap$nodetype <- NA
+    tree.infomap$nodetype[tree.infomap$Name %in% db[, site.field]] <- "site"
+    tree.infomap$nodetype[tree.infomap$Name %in% db[, species.field]] <- "species"
+  }
   
   return(tree.infomap)
 }
