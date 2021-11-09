@@ -11,6 +11,7 @@ clusterMetrics(
   species.field = colnames(db)[2],
   site.area = NULL,
   level = "lvl1",
+  stats.per.cluster = FALSE,
   ...
 )
 }
@@ -25,12 +26,15 @@ typically obtained from \code{\link{readInfomapTree}}}
 \item{species.field}{name or number of species column}
 
 \item{site.area}{\code{NULL} or a data.frame with two columns: \code{name}
-(site name, for correspondence with \code{network}) and \code{area} 
-(contains the area of each site). If \code{NULL}, area-based 
+(site name, for correspondence with \code{network}) and \code{area}
+(contains the area of each site). If \code{NULL}, area-based
 metrics will not be calculated (see details).}
 
-\item{level}{a character string specifying the column/level containing 
+\item{level}{a character string specifying the column/level containing
 clusters}
+
+\item{stats.per.cluster}{experimental, a boolean indicating if site stats
+should be calculated from a focal cluster perspective}
 }
 \value{
 A list with 3 elements
@@ -42,7 +46,7 @@ A list with 3 elements
 }
 }
 \description{
-This function calculate a series of metrics for species and sites with 
+This function calculate a series of metrics for species and sites with
 respect to their characteristic clusters.
 }
 \details{
@@ -56,13 +60,13 @@ the metrics of species occurring within sites.
 Species-level metrics are calculated on the basis of the distribution range
 of species compared to the size of clusters in which they occur. Hence, they
 are supposed to be calculated on areas. However, sometimes areas are not
-available, so we implemented an occurrence-based version of these metrics, 
-i.e. based on counts of species occurrences rather than based on distribution 
+available, so we implemented an occurrence-based version of these metrics,
+i.e. based on counts of species occurrences rather than based on distribution
 range size.
 
 All metrics have an occurrence-based (always prefixed with \code{Occ.}) and
 area-based version. Occurrence-based metrics are always calculated; area-
-based metrics are only calculated if argument \code{site.area} is filled 
+based metrics are only calculated if argument \code{site.area} is filled
 (see examples).
 
 
@@ -82,20 +86,20 @@ associated cluster.
 
 \ifelse{html}{\out{F<sub>i</sub> = R<sub>i</sub> / D<sub>i</sub>}}{\deqn{F_i=R_i/D_i}}
 where \emph{Ri} is the occurrence/range size of species \emph{i} in its associated
-cluster, and \emph{Di} is its total occurrence/range size. 
+cluster, and \emph{Di} is its total occurrence/range size.
 
 A high fidelity means that the species is not present in other clusters than
-their associated one. 
+their associated one.
 }
 
 \item{Indicator Value of species, \emph{IndVal}
 
 \ifelse{html}{\out{IndVal = F<sub>i</sub> * A<sub>i</sub>}}{\deqn{IndVal=F_i A_i}}
 where \emph{Fi} is the Fidelity of species \emph{i} to its associated
-cluster, and Ai is its Affinity to its cluster.  
+cluster, and Ai is its Affinity to its cluster.
 
-The IndVal will have a high value for species that occupy most of their 
-associated cluster (high affinity) and are not present in any other 
+The IndVal will have a high value for species that occupy most of their
+associated cluster (high affinity) and are not present in any other
 cluster (high fidelity).}
 
 
@@ -103,9 +107,9 @@ cluster (high fidelity).}
 
 \ifelse{html}{\out{DilVal = (1 - F<sub>i</sub>) * A<sub>i</sub>}}{\deqn{DilVal=(1-F_i) A_i}}
 where \emph{Fi} is the Fidelity of species \emph{i} to its associated
-cluster, and Ai is its Affinity to its cluster.  
+cluster, and Ai is its Affinity to its cluster.
 
-The DilVal substitues Fidelity (Fi) for Infidelity (1-Fi). A species 
+The DilVal substitues Fidelity (Fi) for Infidelity (1-Fi). A species
 overlapping with much of its associated cluster (high affinity) but mostly
 distributed in other clusters (high infidelity) will have a high DilVal.
 }
@@ -114,14 +118,14 @@ distributed in other clusters (high infidelity) will have a high DilVal.
 \bold{Site-level metrics}
 
 Site-level metrics are calculated on the basis of indices of species occurring
-in sites. 
+in sites.
 
 \itemize{
 \item{Robustness of cells, \emph{Rg}
 
 \ifelse{html}{\out{R<sub>g</sub> = sum(IndVal<sub>i=1..C</sub>) - sum(DilVal<sub>j=1..N</sub>)}}{\deqn{R_g = \sum_{i=1}^C IndVal_i - \sum_{j=1}^N DilVal_j}}
 
-where \emph{C} is the number of characteristic species of the cluster in 
+where \emph{C} is the number of characteristic species of the cluster in
 site \emph{g}, and \emph{N} is the number of non-characteristic species.
 
 Grid cells containing a large number of
@@ -132,7 +136,7 @@ e.g. changes in the dataset (addition/removal of species as new samplings
 are included in the dataset or corrections are made), or species introductions,
 and extinctions.
 }
-\item{Relative robustness of cells, \emph{RRg}. 
+\item{Relative robustness of cells, \emph{RRg}.
 In case of large differences in size or sampling intensities between sites,
 the robustness of cells can be overly influenced by species richness. Hence,
 we implemented a "Relative" version of the robustness index:
