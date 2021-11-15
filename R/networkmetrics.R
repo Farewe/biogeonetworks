@@ -520,7 +520,10 @@ clusterMetrics <- function(db,
   # }
   res$region.stats <- region.stats
   res$species.stats <- sp.stats
-  res$site.stats <- site.stats
-  res$site.stats.per.cluster <- site.stats.per.cluster
+  res$site.stats <- site.stats 
+  if(stats.per.cluster)
+  {
+    res$site.stats.per.cluster <- site.stats.per.cluster
+  }
   return(res)
 }
