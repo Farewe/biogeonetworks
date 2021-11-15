@@ -236,7 +236,10 @@ We read the "fish.tree" file in R with the function `readInfomapTree()`.
 ```{r readinfomaptree, cache = TRUE}
 fish.clusters <- readInfomapTree("fish.tree",
                                  network.summary = TRUE, # Prints a summary of the clustering results
-                                 replace.leaf.names = TRUE) # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
+                                 replace.leaf.names = TRUE, # Changes node numbers to actual names for terminal nodes (i.e. site & species names)
+                                 db = fish, # Specify original database here to know which nodes are sites and which nodes are species
+                                 site.field = "X1.Basin.Name",  # Site column in db
+                                 species.field = "X6.Fishbase.Valid.Species.Name") # Species column in db 
 ```
 
 Let's inspect the generated object:
