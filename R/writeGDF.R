@@ -31,6 +31,8 @@ writeGDF <- function(db, network = NULL, site.field = colnames(db)[1],
                      hex2rgb = TRUE, directed = FALSE,
                      additional.fields = NULL) # additional.fields to be implemented later
 {
+  scipen <- options()$scipen 
+  options(scipen = 999999)
   if(!is.null(network)) # When a network is present, then write a gdf file taking into account network levels
   {
     network[, grep("lvl", colnames(network))] <- apply(network[, grep("lvl", colnames(network))], 2, as.character)
@@ -51,6 +53,8 @@ writeGDF <- function(db, network = NULL, site.field = colnames(db)[1],
                         weight = ifelse(rep(length(abundance.field), nrow(db)), # if abundance
                                         db[, abundance.field], # paste abundance in weight
                                         rep(1, nrow(db)))) # else set weight = 1
+    links[, c(1:2)] <- sapply(links[, c(1:2)], as.integer)
+        
     if(directed)
     {
       links$direction <- rep("true", nrow(links))
@@ -136,4 +140,5 @@ writeGDF <- function(db, network = NULL, site.field = colnames(db)[1],
               paste(apply(db[, c(site.field, species.field, abundance.field, direction)], 1, paste, collapse = ","), collapse = "\n"),
               sep = ""), file = filename)
   }
+  options(scipen = scipen)
 }

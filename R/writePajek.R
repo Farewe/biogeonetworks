@@ -29,8 +29,12 @@
 #'            filename = "pajektest.net", abundance.field = "abundance")
 #'
 #' @export
+#' db <- data.frame(site = 1:200000, species = c("a", "b"))
+#' db[, 1] <- as.integer(db[, 1])
 writePajek <- function(db, site.field = 1, species.field = 2, filename, abundance.field = NULL)
 {
+  scipen <- options()$scipen 
+  options(scipen = 999999)
   if(!is.factor(db[, species.field]))
   {
     db[, species.field] <- as.factor(db[, species.field])
@@ -45,15 +49,17 @@ writePajek <- function(db, site.field = 1, species.field = 2, filename, abundanc
   }
 
   species <- data.frame(sp = levels(db[, species.field]),
-                        id = 1:length(levels(db[, species.field])))
+                        id = as.integer(1:length(levels(db[, species.field]))))
   sites <- data.frame(site = levels(db[, site.field]),
-                      id = length(levels(db[, species.field])) + 1:length(levels(db[, site.field])))
+                      id = as.integer(length(levels(db[, species.field])) + 1:length(levels(db[, site.field]))))
 
   links <- data.frame(from = species$id[match(db[, species.field], species$sp)],
                       to = sites$id[match(db[, site.field], sites$site)],
                       weight = ifelse(rep(length(abundance.field), nrow(db)),
                                       db[, abundance.field],
                                       rep(1, nrow(db))))
+  links[, c(1:2)] <- sapply(links[, c(1:2)], as.integer)
+  
 
   cat(paste("*Vertices ", max(sites$id), "\n",
             paste(species$id, ' "', species$sp, '"', sep = "", collapse = "\n"), "\n",
@@ -61,4 +67,5 @@ writePajek <- function(db, site.field = 1, species.field = 2, filename, abundanc
             "*Edges\n",
             paste(apply(links, 1, paste, collapse = " "), collapse = "\n"),
             sep = ""), file = filename)
+  options(scipen = scipen)
 }

@@ -136,9 +136,15 @@ clusterMetrics <- function(db,
                            species.field = colnames(db)[2],
                            site.area = NULL, # A data.frame containing at least two columns with site name ("name") and site area ("area")
                            level = "lvl1",
+                           site.metrics = TRUE,
+                           species.metrics = TRUE,
                            stats.per.cluster = FALSE,
                            ...)
 {
+  if(is.null(network)) {
+    stop("Did you forget the network argument?")
+  }
+
   dots <- list(...)
   cat("Network data.frame: ", deparse(substitute(network)), "\n")
   cat("Database data.frame: ", deparse(substitute(db)), "\n")
@@ -300,217 +306,233 @@ clusterMetrics <- function(db,
     region.stats$nested.levels[i] <-
       max(which(!is.na(tmp[, paste0("lvl", 1:max.lvl)]), arr.ind = T)[, 2])
   }
+  res$region.stats <- region.stats
 
 
 
-  cat("Computing species indices...\n")
-  sp.stats <- data.frame(species = unique(db[, species.field]))
-
-  # Cluster of our species
-  sp.stats[, "cluster"] <- network[match(sp.stats$species,
-                                         network$Name), level]
-
-
-  sp.stats[, "Endemism"] <- (res$nb.regions.per.sp == 1)[match(sp.stats$species,
-                                                               names(res$nb.regions.per.sp))]
-  rownames(sp.stats) <- sp.stats$species
-  for (sp in sp.stats$species)
-  {
-    # All sites where species occurs
-    site.occurrence.total <- unique(db[which(db[, species.field] == sp), site.field])
-    # Sites of the native region where the species occurs
-    site.occurrence.region <- site.occurrence.total[which(site.occurrence.total %in%
-                                                            network$Name[which(network[, level] ==
-                                                                                 sp.stats[sp, "cluster"])])]
-
-
-
-    # Raw occurrence of the species in the region to which it was assigned
-    sp.stats[sp, "Occ.Ri"] <- length(site.occurrence.region)
-    # Total raw occurrence of the species
-    sp.stats[sp, "Occ.Di"] <- length(site.occurrence.total)
-
-
-    # Occurrence-based affinity
-    sp.stats[sp, "Occ.Ai"] <- sp.stats[sp, "Occ.Ri"] / region.stats$nb.sites[
-      which(region.stats$cluster == sp.stats[sp, "cluster"])]
-    # Occurrence-based Fidelity
-    sp.stats[sp, "Occ.Fi"] <- sp.stats[sp, "Occ.Ri"] / sp.stats[sp, "Occ.Di"]
-
-    # Occurrence-based IndVal
-    sp.stats[sp, "Occ.IndVal"] <- sp.stats[sp, "Occ.Ai"] * sp.stats[sp, "Occ.Fi"]
-    # Occurrence-based DilVal
-    sp.stats[sp, "Occ.DilVal"] <- sp.stats[sp, "Occ.Ai"] * (1 - sp.stats[sp, "Occ.Fi"])
-
-    if(!is.null(site.area))
+  if(species.metrics) {
+    
+    cat("Computing species indices...\n")
+    sp.stats <- data.frame(species = unique(db[, species.field]))
+    
+    # Cluster of our species
+    sp.stats[, "cluster"] <- network[match(sp.stats$species,
+                                           network$Name), level]
+    
+    
+    sp.stats[, "Endemism"] <- (res$nb.regions.per.sp == 1)[match(sp.stats$species,
+                                                                 names(res$nb.regions.per.sp))]
+    rownames(sp.stats) <- sp.stats$species
+    for (sp in sp.stats$species)
     {
-      # area of the distribution range of the species in the region to which it was assigned
-      sp.stats[sp, "Ri"] <- sum(site.area$area[which(site.area$name %in% site.occurrence.region)])
-      # Total area the distribution range of the species
-      sp.stats[sp, "Di"] <- sum(site.area$area[which(site.area$name %in% site.occurrence.total)])
-
-      # area-based affinity
-      sp.stats[sp, "Ai"] <- sp.stats[sp, "Ri"] / region.stats$area[
+      # All sites where species occurs
+      site.occurrence.total <- unique(db[which(db[, species.field] == sp), site.field])
+      # Sites of the native region where the species occurs
+      site.occurrence.region <- site.occurrence.total[which(site.occurrence.total %in%
+                                                              network$Name[which(network[, level] ==
+                                                                                   sp.stats[sp, "cluster"])])]
+      
+      
+      
+      # Raw occurrence of the species in the region to which it was assigned
+      sp.stats[sp, "Occ.Ri"] <- length(site.occurrence.region)
+      # Total raw occurrence of the species
+      sp.stats[sp, "Occ.Di"] <- length(site.occurrence.total)
+      
+      
+      # Occurrence-based affinity
+      sp.stats[sp, "Occ.Ai"] <- sp.stats[sp, "Occ.Ri"] / region.stats$nb.sites[
         which(region.stats$cluster == sp.stats[sp, "cluster"])]
-      # area-based Fidelity
-      sp.stats[sp, "Fi"] <- sp.stats[sp, "Ri"] / sp.stats[sp, "Di"]
-
-      # area-based IndVal
-      sp.stats[sp, "IndVal"] <- sp.stats[sp, "Ai"] * sp.stats[sp, "Fi"]
-      # area-based DilVal
-      sp.stats[sp, "DilVal"] <- sp.stats[sp, "Ai"] * (1 - sp.stats[sp, "Fi"])
-    }
-  }
-
-
-  cat("Computing site indices...\n")
-  site.stats <- data.frame(site = unique(db[, site.field]))
-  rownames(site.stats) <- site.stats$site
-
-  # Cluster of current site
-  site.stats$cluster <- network[match(site.stats$site, network$Name), level]
-
-  # Site contingency table
-  tot.contin <- as.data.frame.matrix(table(db[, species.field],
-                                           db[, site.field]))
-  tot.contin[tot.contin > 1] <- 1
-
-  # Site richness
-  rich <- colSums(tot.contin)
-  site.stats$richness <- rich[match(site.stats$site, names(rich))]
-
-  if(stats.per.cluster)
-  {
-    site.stats.per.cluster <- data.frame(site = unique(db[, site.field]))
-    rownames(site.stats.per.cluster) <- site.stats.per.cluster$site
-
-    # Cluster of current site
-    site.stats.per.cluster$cluster <- network[match(site.stats.per.cluster$site, network$Name), level]
-  }
-
-  # unknown.sites <- NULL
-
-  cur_col <- 1
-  for (site in site.stats$site)
-  {
-    sp.in.site <- unique(db[which(db[, site.field] == site), species.field])
-
-    # Species endemic to the current cluster
-    endemic.sp <- sp.in.site[which(sp.in.site %in% names(res$nb.regions.per.sp)[res$nb.regions.per.sp == 1])]
-    site.stats[site, "end.richness"]<- length(endemic.sp)
-
-    if(site %in% network$Name) # In case new sites are investigated but were not classified in the initial clusters
-    {
-
-      # Characteristic species
-      characteristic.sp <- sp.in.site[which(sp.in.site %in%
-                                              network$Name[which(network[, level] == site.stats[site, "cluster"])])]
-
-      site.stats[site, "char.richness"]<- length(characteristic.sp)
-
-
-      # Non characteristic species
-      noncharacteristic.sp <- sp.in.site[which(!(sp.in.site %in%
-                                                   network$Name[which(network[, level] == site.stats[site, "cluster"])]))]
-
-
-      # Occurrence-based robustness
-      site.stats[site, "Occ.Rg"] <- sum(sp.stats$Occ.IndVal[which(sp.stats$species %in% characteristic.sp)]) -
-        sum(sp.stats$Occ.DilVal[which(sp.stats$species %in% noncharacteristic.sp)])
-      # Occurrence-based relative robustness (= Rg/ species richness)
-      site.stats[site, "Occ.RRg"] <- site.stats[site, "Occ.Rg"] / length(sp.in.site)
-
+      # Occurrence-based Fidelity
+      sp.stats[sp, "Occ.Fi"] <- sp.stats[sp, "Occ.Ri"] / sp.stats[sp, "Occ.Di"]
+      
+      # Occurrence-based IndVal
+      sp.stats[sp, "Occ.IndVal"] <- sp.stats[sp, "Occ.Ai"] * sp.stats[sp, "Occ.Fi"]
+      # Occurrence-based DilVal
+      sp.stats[sp, "Occ.DilVal"] <- sp.stats[sp, "Occ.Ai"] * (1 - sp.stats[sp, "Occ.Fi"])
+      
       if(!is.null(site.area))
       {
-        # area-based robustness
-        site.stats[site, "Rg"] <- sum(sp.stats$IndVal[which(sp.stats$species %in% characteristic.sp)]) -
-          sum(sp.stats$DilVal[which(sp.stats$species %in% noncharacteristic.sp)])
-        # area-based relative robustness (= Rg/ species richness)
-        site.stats[site, "RRg"] <- site.stats[site, "Rg"] / length(sp.in.site)
+        # area of the distribution range of the species in the region to which it was assigned
+        sp.stats[sp, "Ri"] <- sum(site.area$area[which(site.area$name %in% site.occurrence.region)])
+        # Total area the distribution range of the species
+        sp.stats[sp, "Di"] <- sum(site.area$area[which(site.area$name %in% site.occurrence.total)])
+        
+        # area-based affinity
+        sp.stats[sp, "Ai"] <- sp.stats[sp, "Ri"] / region.stats$area[
+          which(region.stats$cluster == sp.stats[sp, "cluster"])]
+        # area-based Fidelity
+        sp.stats[sp, "Fi"] <- sp.stats[sp, "Ri"] / sp.stats[sp, "Di"]
+        
+        # area-based IndVal
+        sp.stats[sp, "IndVal"] <- sp.stats[sp, "Ai"] * sp.stats[sp, "Fi"]
+        # area-based DilVal
+        sp.stats[sp, "DilVal"] <- sp.stats[sp, "Ai"] * (1 - sp.stats[sp, "Fi"])
       }
-    } # else
-    # {
-    #   unknown.sites <- c(unknown.sites,
-    #                      site)
-    # }
+    }
+    
+    res$species.stats <- sp.stats
+  }
+  
+  if(site.metrics) {
+    
+    cat("Computing site indices...\n")
+    site.stats <- data.frame(site = unique(db[, site.field]))
+    rownames(site.stats) <- site.stats$site
+    
+    # Cluster of current site
+    site.stats$cluster <- network[match(site.stats$site, network$Name), level]
+    
+    # Site contingency table
+    tot.contin <- as.data.frame.matrix(table(db[, species.field],
+                                             db[, site.field]))
+    tot.contin[tot.contin > 1] <- 1
+    
+    # Site richness
+    rich <- colSums(tot.contin)
+    site.stats$richness <- rich[match(site.stats$site, names(rich))]
+    
     if(stats.per.cluster)
     {
-      for(focal.cluster in region.stats$cluster)
+      site.stats.per.cluster <- data.frame(site = unique(db[, site.field]))
+      rownames(site.stats.per.cluster) <- site.stats.per.cluster$site
+      
+      # Cluster of current site
+      site.stats.per.cluster$cluster <- network[match(site.stats.per.cluster$site, network$Name), level]
+    }
+    
+    # unknown.sites <- NULL
+    
+    cur_col <- 1
+    for (site in site.stats$site)
+    {
+      sp.in.site <- unique(db[which(db[, site.field] == site), species.field])
+      
+      # Species endemic to the current cluster
+      endemic.sp <- sp.in.site[which(sp.in.site %in% names(res$nb.regions.per.sp)[res$nb.regions.per.sp == 1])]
+      site.stats[site, "end.richness"]<- length(endemic.sp)
+      
+      if(site %in% network$Name) # In case new sites are investigated but were not classified in the initial clusters
       {
-        site.cluster <- site.stats[site, "cluster"]
-        #                focal cluster
-        #                  yes     no
-        # site      yes    A       B
-        # cluster   no     C       D
-
+        
         # Characteristic species
-        A <- sp.in.site[which(sp.in.site %in%
-                                network$Name[which(network[, level] == site.cluster)] &
-                                sp.in.site %in%
-                                network$Name[which(network[, level] == focal.cluster)])]
-
-        B <- sp.in.site[which(sp.in.site %in%
-                                network$Name[which(network[, level] == site.cluster)] &
-                                !(sp.in.site %in%
-                                    network$Name[which(network[, level] == focal.cluster)]))]
-
-        C <- sp.in.site[which(sp.in.site %in%
-                                network$Name[which(network[, level] == focal.cluster)] &
-                                !(sp.in.site %in%
-                                    network$Name[which(network[, level] == site.cluster)]))]
-
-        D <- sp.in.site[which(!(sp.in.site %in%
-                                network$Name[which(network[, level] == focal.cluster)]) &
-                                !(sp.in.site %in%
-                                    network$Name[which(network[, level] == site.cluster)]))]
-
-
+        characteristic.sp <- sp.in.site[which(sp.in.site %in%
+                                                network$Name[which(network[, level] == site.stats[site, "cluster"])])]
+        
+        site.stats[site, "char.richness"]<- length(characteristic.sp)
+        
+        
+        # Non characteristic species
+        noncharacteristic.sp <- sp.in.site[which(!(sp.in.site %in%
+                                                     network$Name[which(network[, level] == site.stats[site, "cluster"])]))]
+        
+        
         # Occurrence-based robustness
-        if(site.cluster == focal.cluster)
-        {
-          site.stats.per.cluster[site, paste0("Occ.Rg.", focal.cluster)] <- sum(sp.stats$Occ.IndVal[which(sp.stats$species %in% A)]) -
-            sum(sp.stats$Occ.DilVal[which(sp.stats$species %in% D)])
+        if(species.metrics) {
+          site.stats[site, "Occ.Rg"] <- sum(sp.stats$Occ.IndVal[which(sp.stats$species %in% characteristic.sp)]) -
+            sum(sp.stats$Occ.DilVal[which(sp.stats$species %in% noncharacteristic.sp)])
           # Occurrence-based relative robustness (= Rg/ species richness)
-          site.stats.per.cluster[site, paste0("Occ.RRg.", focal.cluster)] <- site.stats.per.cluster[site, paste0("Occ.Rg.", focal.cluster)] / length(sp.in.site)
+          site.stats[site, "Occ.RRg"] <- site.stats[site, "Occ.Rg"] / length(sp.in.site)
+        } else {
+          warning("Site robustness cannot be computed without species metrics")
+        }
 
-          if(!is.null(site.area))
-          {
-            # area-based robustness
-            site.stats.per.cluster[site, paste0("Rg.", focal.cluster)] <- sum(sp.stats$IndVal[which(sp.stats$species %in% A)]) -
-              sum(sp.stats$DilVal[which(sp.stats$species %in% D)])
-            # area-based relative robustness (= Rg/ species richness)
-            site.stats.per.cluster[site, paste0("RRg.", focal.cluster)] <- site.stats.per.cluster[site, paste0("Rg.", focal.cluster)] / length(sp.in.site)
-          }
-        } else
+        
+        if(!is.null(site.area))
         {
-          site.stats.per.cluster[site, paste0("Occ.Rg.", focal.cluster)] <- sum(sp.stats$Occ.IndVal[which(sp.stats$species %in% B)]) +
-            sum(sp.stats$Occ.DilVal[which(sp.stats$species %in% D)]) -
-            sum(sp.stats$Occ.DilVal[which(sp.stats$species %in% C)])
-          # Occurrence-based relative robustness (= Rg/ species richness)
-          site.stats.per.cluster[site, paste0("Occ.RRg.", focal.cluster)] <- site.stats.per.cluster[site, paste0("Occ.Rg.", focal.cluster)] / length(sp.in.site)
-
-          if(!is.null(site.area))
-          {
-            # area-based robustness
-            site.stats.per.cluster[site, paste0("Rg.", focal.cluster)] <- 1 - sum(sp.stats$IndVal[which(sp.stats$species %in% B)]) +
-              sum(sp.stats$DilVal[which(sp.stats$species %in% D)]) -
-              sum(sp.stats$DilVal[which(sp.stats$species %in% C)])
+          # area-based robustness
+          if(species.metrics) {
+            site.stats[site, "Rg"] <- sum(sp.stats$IndVal[which(sp.stats$species %in% characteristic.sp)]) -
+              sum(sp.stats$DilVal[which(sp.stats$species %in% noncharacteristic.sp)])
             # area-based relative robustness (= Rg/ species richness)
-            site.stats.per.cluster[site, paste0("RRg.", focal.cluster)] <- site.stats.per.cluster[site, paste0("Rg.", focal.cluster)] / length(sp.in.site)
+            site.stats[site, "RRg"] <- site.stats[site, "Rg"] / length(sp.in.site)
           }
         }
-      }
-      cat(".")
-      if((cur_col) == length(site.stats$site))
+      } # else
+      # {
+      #   unknown.sites <- c(unknown.sites,
+      #                      site)
+      # }
+      if(stats.per.cluster)
       {
-        cat("Complete\n")
-      } else if((cur_col) %% 50 == 0)
-      {
-        cat(paste0("Site N°", cur_col, " ~ ", round(100 * (cur_col) / length(site.stats$site), 2), "% complete\n"))
+        for(focal.cluster in region.stats$cluster)
+        {
+          site.cluster <- site.stats[site, "cluster"]
+          #                focal cluster
+          #                  yes     no
+          # site      yes    A       B
+          # cluster   no     C       D
+          
+          # Characteristic species
+          A <- sp.in.site[which(sp.in.site %in%
+                                  network$Name[which(network[, level] == site.cluster)] &
+                                  sp.in.site %in%
+                                  network$Name[which(network[, level] == focal.cluster)])]
+          
+          B <- sp.in.site[which(sp.in.site %in%
+                                  network$Name[which(network[, level] == site.cluster)] &
+                                  !(sp.in.site %in%
+                                      network$Name[which(network[, level] == focal.cluster)]))]
+          
+          C <- sp.in.site[which(sp.in.site %in%
+                                  network$Name[which(network[, level] == focal.cluster)] &
+                                  !(sp.in.site %in%
+                                      network$Name[which(network[, level] == site.cluster)]))]
+          
+          D <- sp.in.site[which(!(sp.in.site %in%
+                                    network$Name[which(network[, level] == focal.cluster)]) &
+                                  !(sp.in.site %in%
+                                      network$Name[which(network[, level] == site.cluster)]))]
+          
+          
+          # Occurrence-based robustness
+          if(site.cluster == focal.cluster)
+          {
+            site.stats.per.cluster[site, paste0("Occ.Rg.", focal.cluster)] <- sum(sp.stats$Occ.IndVal[which(sp.stats$species %in% A)]) -
+              sum(sp.stats$Occ.DilVal[which(sp.stats$species %in% D)])
+            # Occurrence-based relative robustness (= Rg/ species richness)
+            site.stats.per.cluster[site, paste0("Occ.RRg.", focal.cluster)] <- site.stats.per.cluster[site, paste0("Occ.Rg.", focal.cluster)] / length(sp.in.site)
+            
+            if(!is.null(site.area))
+            {
+              # area-based robustness
+              site.stats.per.cluster[site, paste0("Rg.", focal.cluster)] <- sum(sp.stats$IndVal[which(sp.stats$species %in% A)]) -
+                sum(sp.stats$DilVal[which(sp.stats$species %in% D)])
+              # area-based relative robustness (= Rg/ species richness)
+              site.stats.per.cluster[site, paste0("RRg.", focal.cluster)] <- site.stats.per.cluster[site, paste0("Rg.", focal.cluster)] / length(sp.in.site)
+            }
+          } else
+          {
+            site.stats.per.cluster[site, paste0("Occ.Rg.", focal.cluster)] <- sum(sp.stats$Occ.IndVal[which(sp.stats$species %in% B)]) +
+              sum(sp.stats$Occ.DilVal[which(sp.stats$species %in% D)]) -
+              sum(sp.stats$Occ.DilVal[which(sp.stats$species %in% C)])
+            # Occurrence-based relative robustness (= Rg/ species richness)
+            site.stats.per.cluster[site, paste0("Occ.RRg.", focal.cluster)] <- site.stats.per.cluster[site, paste0("Occ.Rg.", focal.cluster)] / length(sp.in.site)
+            
+            if(!is.null(site.area))
+            {
+              # area-based robustness
+              site.stats.per.cluster[site, paste0("Rg.", focal.cluster)] <- 1 - sum(sp.stats$IndVal[which(sp.stats$species %in% B)]) +
+                sum(sp.stats$DilVal[which(sp.stats$species %in% D)]) -
+                sum(sp.stats$DilVal[which(sp.stats$species %in% C)])
+              # area-based relative robustness (= Rg/ species richness)
+              site.stats.per.cluster[site, paste0("RRg.", focal.cluster)] <- site.stats.per.cluster[site, paste0("Rg.", focal.cluster)] / length(sp.in.site)
+            }
+          }
+        }
+        cat(".")
+        if((cur_col) == length(site.stats$site))
+        {
+          cat("Complete\n")
+        } else if((cur_col) %% 50 == 0)
+        {
+          cat(paste0("Site N°", cur_col, " ~ ", round(100 * (cur_col) / length(site.stats$site), 2), "% complete\n"))
+        }
+        
+        cur_col <- cur_col + 1
       }
-
-      cur_col <- cur_col + 1
     }
+    res$site.stats <- site.stats 
   }
   # if(length(unknown.sites))
   # {
@@ -518,9 +540,6 @@ clusterMetrics <- function(db,
   #   Site indices will not be calculated for these sites: \n",
   #                  paste(unknown.sites, collapse = "\n")))
   # }
-  res$region.stats <- region.stats
-  res$species.stats <- sp.stats
-  res$site.stats <- site.stats 
   if(stats.per.cluster)
   {
     res$site.stats.per.cluster <- site.stats.per.cluster
